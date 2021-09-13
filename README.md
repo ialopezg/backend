@@ -11,6 +11,7 @@
 - **`AbstractEntity`**, is moslty object-design-based solution to make TypeORM works as expected.
 - **`BadRequest & QueryFailed`** filter exceptions, defines an exceptions layer for processing all unhandled exceptions across the application. When an exception is not handled by your application code, it is caught by this layer, which then automatically sends an appropriate user-friendly response.
 - **`Global Validation`**, It is best practice to validate the correctness of any data sent into a web application and automatically validate incoming requests. As a class-validator provides validations as like as `ValidationPipe`, `ParseIntPipe`, `ParseBoolPipe`, `ParseArrayPipe`, and `ParseUUIDPipe`.
+- **`Data Persistence & Object Relational Mapping Support`**, comprising all disciplines related to managing data as a valuable resource based on the concept of "objects". When this storage and retrieval functionality is implemented, the objects are said to be persistent.
 
 ## Support
 
