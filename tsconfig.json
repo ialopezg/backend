@@ -9,8 +9,15 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "common/*": ["common/*"],
+      "migrations/*": ["migrations/*"],
+      "modules/*": ["modules/*"],
+      "providers/*": ["providers/*"],
+      "utils/*": ["utils/*"]
+    }
   }
 }
