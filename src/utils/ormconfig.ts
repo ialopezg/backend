@@ -1,6 +1,6 @@
 import 'providers/polyfill.provider';
 
-import { SnakeNamingStrategy } from 'utils/strategies';
+import { SnakeNamingStrategy } from 'modules/database/strategies';
 import { ConfigService } from '@nestjs/config';
 import { ConnectionOptions } from 'typeorm';
 
