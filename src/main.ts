@@ -7,11 +7,12 @@ import {
 } from '@nestjs/platform-express';
 import * as compression from 'compression';
 import * as RateLimit from 'express-rate-limit';
+import { HttpExceptionFilter, QueryFailedFilter } from 'filters';
 import * as helmet from 'helmet';
 import { AppModule } from 'modules/app';
 import * as morgan from 'morgan';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
     new ExpressAdapter(),
@@ -33,6 +34,10 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
+  app.useGlobalFilters(
+    new HttpExceptionFilter(reflector),
+    new QueryFailedFilter(reflector),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -43,7 +48,7 @@ async function bootstrap() {
   );
 
   const configService = app.get(ConfigService);
-
   await app.listen(configService.get('APP_PORT'));
 }
-bootstrap();
+
+void bootstrap();

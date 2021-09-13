@@ -1,47 +1,16 @@
-<p align="center">A Base skeleton with authentication, users, roles, exceptions, logs, migrations, and default dispatchers built with NestJS.</p>
+<p align="center">API Boilerplate is a TypeScript API starter repository</p>
 
 ## Description
 
-[API Boilerplate](https://github.com/ialopezg/api-boilerplate) is TypeScript API starter repository.
+[API Boilerplate](https://github.com/ialopezg/api-boilerplate) is a basic skeleton with class abstraction, global & local validation, global & local exception handlers, logging &data tracking, data transfer objects, execution context, authentication, users & user roles, migrations, and default dispatchers built with NestJS.
+### Features
 
-## Installation
-
-```bash
-$ yarn install
-```
-
-## Running the app
-
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Features
-
-- `Data Transfer Object (DTO)` polyfill transformation functionality.
-- `Context Middleware`, provide information about the current execution context which can be used to build generic guards, filters, and interceptors that can work across a broad set of controllers, methods, and execution contexts.
-- `AbstractDto`,  an object that is used to encapsulate data, and send it from one subsystem of an application to another subsystem, module, etc.
-- `AbstractEntity`, is moslty object-design-based solution to make TypeORM works as expected.
+- **`Data Transfer Object (DTO)`** polyfill transformation functionality.
+- **`Context Middleware`**, provide information about the current execution context which can be used to build generic guards, filters, and interceptors that can work across a broad set of controllers, methods, and execution contexts.
+- **`AbstractDto`**,  an object that is used to encapsulate data, and send it from one subsystem of an application to another subsystem, module, etc.
+- **`AbstractEntity`**, is moslty object-design-based solution to make TypeORM works as expected.
+- **`BadRequest & QueryFailed`** filter exceptions, defines an exceptions layer for processing all unhandled exceptions across the application. When an exception is not handled by your application code, it is caught by this layer, which then automatically sends an appropriate user-friendly response.
+- **`Global Validation`**, It is best practice to validate the correctness of any data sent into a web application and automatically validate incoming requests. As a class-validator provides validations as like as `ValidationPipe`, `ParseIntPipe`, `ParseBoolPipe`, `ParseArrayPipe`, and `ParseUUIDPipe`.
 
 ## Support
 

@@ -1,7 +1,7 @@
 {
   "name": "api-boilerplate",
-  "version": "1.0.1",
-  "description": "NestJS API Boilerplate - Base skeleton with authentication, users, roles, exceptions, logs, migrations, and default dispatchers",
+  "version": "1.0.2",
+  "description": "is a basic skeleton with class abstraction, global & local validation, global & local exception handlers, logging &data tracking, data transfer objects, execution context, authentication, users & user roles, migrations, and default dispatchers built with NestJS",
   "author": "Isidro A. López G. <me@ialopezg.com> (https://ialopezg.com)",
   "license": "MIT",
   "scripts": {
