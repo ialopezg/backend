@@ -6,5 +6,6 @@ export class AppService {
 
   onModuleInit() {
     this._logger.log('AppService has been initialized.')
+    console.log(process.env);
   }
 }

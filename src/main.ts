@@ -11,8 +11,16 @@ import { HttpExceptionFilter, QueryFailedFilter } from 'filters';
 import * as helmet from 'helmet';
 import { AppModule } from 'modules/app';
 import * as morgan from 'morgan';
+import {
+  initializeTransactionalContext,
+  patchTypeORMRepositoryWithBaseRepository,
+} from 'typeorm-transactional-cls-hooked';
+import { setupSwagger } from 'utils/swagger';
 
 async function bootstrap(): Promise<void> {
+  initializeTransactionalContext();
+  patchTypeORMRepositoryWithBaseRepository();
+
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
     new ExpressAdapter(),
@@ -46,6 +54,8 @@ async function bootstrap(): Promise<void> {
       validationError: { target: false },
     }),
   );
+
+  setupSwagger(app);
 
   const configService = app.get(ConfigService);
   await app.listen(configService.get('APP_PORT'));
