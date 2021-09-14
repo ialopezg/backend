@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import { AbstractDto } from 'common/dtos';
+import { UserAuthDto } from 'modules/user/dtos';
 import { UserEntity } from 'modules/user/entities';
 import { Column } from 'typeorm';
 
@@ -25,6 +27,13 @@ export class UserDto extends AbstractDto {
   @ApiPropertyOptional({ description: 'User avatar image' })
   readonly avatar?: string;
 
+  @ApiProperty({
+    description: 'User session information',
+    type: () => UserAuthDto,
+  })
+  @IsOptional()
+  readonly userAuth?: UserAuthDto;
+
   constructor(user: UserEntity) {
     super(user);
 
@@ -34,5 +43,6 @@ export class UserDto extends AbstractDto {
     this.motherName = user?.motherName;
     this.email = user?.email;
     this.phone = user?.phone;
+    this.userAuth = user.userAuth?.toDto();
   }
 }

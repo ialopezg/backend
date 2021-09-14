@@ -8,7 +8,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class UserCreationDto {
+export class UserRegistrationDto {
   @ApiProperty({ description: 'User first name' })
   @IsString()
   @IsNotEmpty()
@@ -23,6 +23,16 @@ export class UserCreationDto {
   @IsEmail()
   @IsNotEmpty()
   readonly email: string;
+
+  @ApiProperty({ description: 'User password', minLength: 6 })
+  @IsString()
+  @MinLength(6)
+  readonly password: string;
+
+  @ApiPropertyOptional({ description: 'User currency' })
+  @IsString()
+  @IsOptional()
+  readonly currency?: string;
 
   @ApiPropertyOptional({ description: 'User phone number' })
   @IsPhoneNumber()

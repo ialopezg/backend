@@ -18,7 +18,8 @@
 
 ### Modules
 
-- **`Users`**. Mandatory module. Cannot be disabled. Used to handle and manage third-party data information.
+- **`Users`**. Mandatory module. Cannot be disabled. Used to handle and manage users, internal or external, data information.
+- **`Authentication & Authorization`**. Mandatory module. Cannot be disabled. Used to authenticate and authorize registered users. Depends of `User` Module.
 
 ## Support
 

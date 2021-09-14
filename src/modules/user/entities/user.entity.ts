@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'common/entities';
 import { UserDto } from 'modules/user/dtos';
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToOne, UpdateDateColumn } from 'typeorm';
+import { UserAuthEntity } from '.';
 
 @Entity({ name: 'users' })
 export class UserEntity extends AbstractEntity<UserDto> {
@@ -30,6 +31,9 @@ export class UserEntity extends AbstractEntity<UserDto> {
 
   @UpdateDateColumn({ type: 'timestamp with time zone', nullable: true })
   updatedAt: Date;
+
+  @OneToOne(() => UserAuthEntity, (userAuth: UserAuthEntity) => userAuth.user)
+  public userAuth: UserAuthEntity;
 
   dtoClass = UserDto;
 }

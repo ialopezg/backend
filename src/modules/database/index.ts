@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'modules/database/strategies';
+import { UserAuthSubscriber, UserSubscriber } from 'modules/user/subscribers';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { SnakeNamingStrategy } from 'modules/database/strategies';
         migrations: [__dirname + '/../../migrations/*{.ts,.js}'],
         namingStrategy: new SnakeNamingStrategy(),
         synchronize: false,
-        subscribers: [],
+        subscribers: [UserSubscriber, UserAuthSubscriber],
         migrationsRun: true,
         logging: true,
       }),
