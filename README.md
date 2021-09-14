@@ -16,6 +16,10 @@
 - **`Data Analysis`**, transactional operations let data hygiene and integrity is maintained by the database feature of only logging completed transactions. The system cancels a transaction that did not check all the proper completion boxes. This inbuilt screening mechanism ensures that the data recorded is either a successful transaction or a failure. This feature is not without its challenges; notably, it is sometimes difficult to scale up.
 - **`API Documentation`**, is the technical content deliverable, containing instructions about how to effectively use and integrate with an API. It’s a concise reference manual containing all the information required to work with the API, with details about the functions, classes, return types, arguments and more, supported by tutorials and examples. API Documentation has traditionally been done using regular content creation and maintenance tools and text editors.
 
+### Modules
+
+- **`Users`**. Mandatory module. Cannot be disabled. Used to handle and manage third-party data information.
+
 ## Support
 
 API Boilerplate is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://ialopezg.com/api-boilerplate).

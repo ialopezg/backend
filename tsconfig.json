@@ -15,6 +15,7 @@
     "paths": {
       "common/*": ["common/*"],
       "filters/*": ["filters/*"],
+      "interfaces/*": ["interfaces/*"],
       "middlewares/*": ["middlewares/*"],
       "migrations/*": ["migrations/*"],
       "modules/*": ["modules/*"],

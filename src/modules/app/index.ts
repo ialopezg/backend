@@ -6,6 +6,8 @@ import * as Joi from 'joi';
 import { AppService } from 'modules/app/services';
 import { contextMiddleware } from 'middlewares';
 import { DatabaseModule } from 'modules/database';
+import { AuthModule } from 'modules/auth';
+import { UserModule } from 'modules/user';
 
 @Module({
   imports: [
@@ -16,11 +18,13 @@ import { DatabaseModule } from 'modules/database';
         DB_HOST: Joi.string(),
         DB_PORT: Joi.number(),
         DB_USERNAME: Joi.string(),
-        DB_PASSWORD: Joi.string(),
+        DB_PASSWORD: Joi.string().allow(''),
         DB_NAME: Joi.string(),
       }),
     }),
     DatabaseModule,
+    UserModule,
+    AuthModule,
   ],
   providers: [AppService],
 })
