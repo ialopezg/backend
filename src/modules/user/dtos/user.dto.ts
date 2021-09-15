@@ -3,7 +3,6 @@ import { IsOptional } from 'class-validator';
 import { AbstractDto } from 'common/dtos';
 import { UserAuthDto } from 'modules/user/dtos';
 import { UserEntity } from 'modules/user/entities';
-import { Column } from 'typeorm';
 
 export class UserDto extends AbstractDto {
   @ApiProperty({ description: 'User first name' })
@@ -17,9 +16,6 @@ export class UserDto extends AbstractDto {
 
   @ApiPropertyOptional({ description: 'User mother name' })
   readonly motherName: string;
-
-  @Column({ unique: true })
-  readonly email: string;
 
   @ApiPropertyOptional({ description: 'User phone number' })
   readonly phone?: string;
@@ -41,7 +37,6 @@ export class UserDto extends AbstractDto {
     this.middleName = user?.middleName;
     this.lastName = user.lastName;
     this.motherName = user?.motherName;
-    this.email = user?.email;
     this.phone = user?.phone;
     this.userAuth = user.userAuth?.toDto();
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserRegistrationDto, UserLoginDto } from 'modules/auth/dtos';
@@ -7,7 +7,11 @@ import {
   RefreshTokenNotMatchingException,
   WrongCredentialsProvidedException,
 } from 'modules/auth/exceptions';
-import { TokenPayloadInterface } from 'modules/auth/interfaces';
+import {
+  TokenPayloadInterface,
+  VerificationTokenPayload,
+} from 'modules/auth/interfaces';
+import { MailService } from 'modules/mail/services';
 import { UserAuthService, UserService } from 'modules/user/services';
 import { validateHash } from 'utils/hash.util';
 
@@ -18,6 +22,7 @@ export class AuthService {
     private readonly _userAuthService: UserAuthService,
     private readonly _jwtService: JwtService,
     private readonly _configService: ConfigService,
+    private readonly _mailService: MailService,
   ) {}
 
   public async register(
@@ -96,6 +101,34 @@ export class AuthService {
     return user;
   }
 
+  public getJwtConfirmToken(email: string): string {
+    const payload: VerificationTokenPayload = { email };
+    const token = this._jwtService.sign(payload, {
+      secret: this._configService.get('JWT_VERIFICATION_TOKEN_SECRET_KEY'),
+      expiresIn: `${this._configService.get(
+        'JWT_VERIFICATION_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+
+    return token;
+  }
+
+  public async resendConfirmationLink(uuid: string): Promise<void> {
+    const user = await this._userService.getUser(uuid);
+
+    if (user.userAuth.active) {
+      throw new BadRequestException('Email already confirmed');
+    }
+
+    await this._mailService.sendConfirmationEmail(user);
+  }
+
+  public async confirm(token: string) {
+    const email = await this._decodeConfirmationToken(token);
+
+    return this._confirmEmail(email);
+  }
+
   private _getCookieWithJwtToken(uuid: string): string {
     const payload: TokenPayloadInterface = { uuid };
     const token = this._jwtService.sign(payload, {
@@ -123,5 +156,35 @@ export class AuthService {
     )}`;
 
     return { cookie, token };
+  }
+
+  private async _decodeConfirmationToken(token: string): Promise<string> {
+    try {
+      const payload = await this._jwtService.verify(token, {
+        secret: this._configService.get('JWT_VERIFICATION_TOKEN_SECRET_KEY'),
+      });
+
+      if (typeof payload === 'object' && 'userAuth' in payload) {
+        return payload.userAuth.email;
+      }
+
+      throw new BadRequestException();
+    } catch (error) {
+      if (error?.name === 'TokenExpiredError') {
+        throw new BadRequestException('Email confirmation token expired');
+      }
+
+      throw new BadRequestException('Bad confirmation token');
+    }
+  }
+
+  private async _confirmEmail(email: string): Promise<void> {
+    const user = await this._userService.findUser({ email });
+
+    if (user.userAuth.active) {
+      throw new BadRequestException('Email already confirmed');
+    }
+
+    await this._userAuthService.markEmailAsConfirmed(email);
   }
 }

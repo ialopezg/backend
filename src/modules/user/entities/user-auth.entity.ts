@@ -19,6 +19,9 @@ export class UserAuthEntity extends AbstractEntity<UserAuthDto> {
   @Column({ unique: true })
   pinCode: number;
 
+  @Column({ unique: true })
+  email: string;
+
   @Column()
   password: string;
 
@@ -37,6 +40,10 @@ export class UserAuthEntity extends AbstractEntity<UserAuthDto> {
   @Column({ nullable: true })
   @Exclude()
   currentHashedRefreshToken?: string;
+
+  @Column({ default: false })
+  @Exclude()
+  active: boolean;
 
   @OneToOne(() => UserEntity, (user: UserEntity) => user.userAuth, {
     onDelete: 'CASCADE',

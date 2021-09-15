@@ -21,6 +21,9 @@ export class UserAuthSubscriber
     if (entity.password) {
       entity.password = await generateHash(entity.password);
     }
+    if (entity.email) {
+      entity.email = entity.email.toLowerCase();
+    }
   }
 
   async beforeUpdate({
@@ -31,6 +34,10 @@ export class UserAuthSubscriber
 
     if (password !== databaseEntity?.password) {
       entity.password = generateHash(entity.password);
+    }
+
+    if (entity.email !== databaseEntity.email) {
+      entity.email = entity.email.toLowerCase();
     }
 
     if (entity.currentHashedRefreshToken) {

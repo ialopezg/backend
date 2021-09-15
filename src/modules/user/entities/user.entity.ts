@@ -17,9 +17,6 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @Column({ nullable: true })
   motherName?: string;
 
-  @Column({ unique: true })
-  email: string;
-
   @Column({ unique: true, nullable: true })
   phone?: string;
 

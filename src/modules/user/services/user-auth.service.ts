@@ -36,6 +36,10 @@ export class UserAuthService {
     return this._userService.findUser(options);
   }
 
+  public async markEmailAsConfirmed(email: string): Promise<UpdateResult> {
+    return this._userAuthRepository.update({ email }, { active: true });
+  }
+
   public async updateRefreshToken(
     userAuthId: number,
     currentHashedRefreshToken: string,

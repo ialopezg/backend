@@ -9,14 +9,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthenticationGuard } from 'modules/auth/guards';
+import { JwtAccessTokenGuard } from 'modules/auth/guards';
 import { RequestWithUserInterface } from 'modules/auth/interfaces';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('User')
 @ApiTags('Users')
 export class UserController {
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAccessTokenGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   public async getUser(@Req() { user }: RequestWithUserInterface) {

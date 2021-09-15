@@ -12,20 +12,21 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
-  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserRegistrationDto } from 'modules/auth/dtos';
+import { ConfirmEmailDto, UserRegistrationDto } from 'modules/auth/dtos';
 import {
-  JwtAuthenticationGuard,
-  JwtRefreshGuard,
+  EmailConfirmationGuard,
+  JwtAccessTokenGuard,
+  JwtRefreshTokenGuard,
   LocalAuthenticationGuard,
 } from 'modules/auth/guards';
 import { RequestWithUserInterface } from 'modules/auth/interfaces';
 import { AuthService } from 'modules/auth/services';
+import { MailService } from 'modules/mail/services';
 import { UserDto } from 'modules/user/dtos';
 import { UserEntity } from 'modules/user/entities';
 import { UserService } from 'modules/user/services';
@@ -37,6 +38,7 @@ export class AuthController {
   constructor(
     private readonly _authService: AuthService,
     private readonly _userService: UserService,
+    private readonly _mailService: MailService,
   ) {}
 
   @Post('register')
@@ -51,6 +53,8 @@ export class AuthController {
     @Body() userRegistrationDto: UserRegistrationDto,
   ): Promise<UserDto> {
     const user = await this._authService.register(userRegistrationDto);
+
+    await this._mailService.sendConfirmationEmail(user);
 
     return user.toDto();
   }
@@ -77,6 +81,7 @@ export class AuthController {
   }
 
   @Get('/profile')
+  @UseGuards(JwtRefreshTokenGuard, EmailConfirmationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -92,7 +97,7 @@ export class AuthController {
     return userEntity.toDto();
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('logout')
   @ApiOperation({ summary: 'Delete current user session' })
@@ -106,7 +111,7 @@ export class AuthController {
   }
 
   @Get('refresh')
-  @UseGuards(JwtRefreshGuard)
+  @UseGuards(JwtRefreshTokenGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'User information with a new access token',
@@ -119,5 +124,26 @@ export class AuthController {
     request.res.setHeader('Set-Cookie', accessTokenCookie);
 
     return request.user;
+  }
+
+  @Post('confirm')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Finish the confirmation email process for current user',
+  })
+  async confirm(@Body() { token }: ConfirmEmailDto): Promise<void> {
+    return this._authService.confirm(token);
+  }
+
+  @Post('resend/confirmation/link')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAccessTokenGuard)
+  @ApiOperation({
+    summary: 'Resend the confirmation link for current user',
+  })
+  async resendConfirmationLink(
+    @Req() request: RequestWithUserInterface,
+  ): Promise<void> {
+    await this._authService.resendConfirmationLink(request.user.uuid);
   }
 }

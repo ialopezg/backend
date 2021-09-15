@@ -42,7 +42,9 @@ export class UserService {
       });
     }
 
-    queryBuilder.orWhere('user.email = :email', { email: options.email });
+    if (options.email) {
+      queryBuilder.orWhere('userAuth.email = :email', { email: options.email });
+    }
 
     return queryBuilder.getOne();
   }
