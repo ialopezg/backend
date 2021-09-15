@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -93,11 +94,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthenticationGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('logout')
-  @ApiNoContentResponse({
-    description: 'Successfully Logout',
-  })
-  @ApiOperation({ summary: 'Closes current user session' })
+  @Delete('logout')
+  @ApiOperation({ summary: 'Delete current user session' })
   async logout(@Req() request: RequestWithUserInterface): Promise<void> {
     await this._authService.logout(request.user);
 
@@ -111,9 +109,10 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Get current user with access token updated',
+    description: 'User information with a new access token',
     type: UserDto,
   })
+  @ApiOperation({ summary: 'Refresh current user access token' })
   async refresh(@Req() request: RequestWithUserInterface): Promise<UserEntity> {
     const accessTokenCookie = this._authService.refreshToken(request.user);
 

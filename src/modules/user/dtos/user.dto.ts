@@ -27,7 +27,7 @@ export class UserDto extends AbstractDto {
   @ApiPropertyOptional({ description: 'User avatar image' })
   readonly avatar?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'User session information',
     type: () => UserAuthDto,
   })

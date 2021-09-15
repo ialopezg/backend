@@ -36,7 +36,7 @@ API Boilerplate is an MIT-licensed open source project. It can grow thanks to th
 
 - Author - [Isidro A. López G.](https://ialopezg.com)
 - Website - [https://ialopezg.com](https://ialopezg.com/)
-- Twitter - [@ialopezg](https://twitter.com/isidro.lopezg)
+- Twitter - [@isidrolopezg](https://twitter.com/isidrolopezg)
 
 ## License
 
