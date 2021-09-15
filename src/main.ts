@@ -6,6 +6,7 @@ import {
   NestExpressApplication,
 } from '@nestjs/platform-express';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
 import * as RateLimit from 'express-rate-limit';
 import { HttpExceptionFilter, QueryFailedFilter } from 'filters';
 import * as helmet from 'helmet';
@@ -37,6 +38,7 @@ async function bootstrap(): Promise<void> {
   );
   app.use(compression());
   app.use(morgan('combined'));
+  app.use(cookieParser);
   app.setGlobalPrefix('api');
 
   const reflector = app.get(Reflector);

@@ -12,7 +12,6 @@ import { UserModule } from 'modules/user';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       validationSchema: Joi.object({
         APP_PORT: Joi.number(),
         DB_HOST: Joi.string(),
@@ -20,6 +19,8 @@ import { UserModule } from 'modules/user';
         DB_USERNAME: Joi.string(),
         DB_PASSWORD: Joi.string().allow(''),
         DB_NAME: Joi.string(),
+        JWT_ACCESS_TOKEN_SECRET_KEY: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
       }),
     }),
     DatabaseModule,

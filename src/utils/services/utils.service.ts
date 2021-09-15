@@ -1,5 +1,3 @@
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
 import * as _ from 'lodash';
 
 export class UtilsService {
@@ -32,14 +30,6 @@ export class UtilsService {
       .slice(1)}`;
   }
 
-  static generateHash(password: string): string {
-    return bcrypt.hashSync(password, 10);
-  }
-
-  static validateHash(password: string, hash: string): Promise<boolean> {
-    return bcrypt.compare(password, hash || '');
-  }
-
   static generateRandomInteger(min: number, max: number): number {
     return Math.floor(min + Math.random() * (max + 1 - min));
   }
@@ -56,14 +46,5 @@ export class UtilsService {
     return Math.floor(
       (new Date().getTime() - new Date(birthdate).getTime()) / 3.15576e10,
     );
-  }
-
-  /**
-   * encode (hash) text to sha256
-   * @param {string} text
-   * @returns {string}
-   */
-  static encodeString(text: string): string {
-    return crypto.createHash('sha256').update(text).digest('hex');
   }
 }

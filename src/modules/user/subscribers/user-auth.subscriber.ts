@@ -5,7 +5,7 @@ import {
   InsertEvent,
   UpdateEvent,
 } from 'typeorm';
-import { UtilsService } from 'utils/services';
+import { generateHash } from 'utils';
 
 @EventSubscriber()
 export class UserAuthSubscriber
@@ -15,17 +15,20 @@ export class UserAuthSubscriber
     return UserAuthEntity;
   }
 
-  beforeInsert({ entity }: InsertEvent<UserAuthEntity>): void {
+  async beforeInsert({ entity }: InsertEvent<UserAuthEntity>): Promise<void> {
     console.log('event', entity);
 
     if (entity.password) {
-      entity.password = UtilsService.generateHash(entity.password);
+      entity.password = await generateHash(entity.password);
     }
   }
 
-  beforeUpdate({ entity, databaseEntity }: UpdateEvent<UserAuthEntity>): void {
+  async beforeUpdate({
+    entity,
+    databaseEntity,
+  }: UpdateEvent<UserAuthEntity>): Promise<void> {
     if (entity?.password !== databaseEntity?.password) {
-      entity.password = UtilsService.generateHash(entity.password);
+      entity.password = generateHash(entity.password);
     }
   }
 }

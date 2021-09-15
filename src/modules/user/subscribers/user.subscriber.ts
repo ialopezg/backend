@@ -14,8 +14,15 @@ export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
   }
 
   beforeInsert({ entity }: InsertEvent<UserEntity>): void {
-    entity.firstName = UtilsService.capitalizeFirst(entity.firstName);
-    entity.lastName = UtilsService.capitalizeFirst(entity.lastName);
+    if (entity.firstName) {
+      entity.firstName = UtilsService.capitalizeFirst(entity.firstName);
+    }
+    if (entity.lastName) {
+      entity.lastName = UtilsService.capitalizeFirst(entity.lastName);
+    }
+    if (entity.email) {
+      entity.email = entity.email.toLowerCase();
+    }
   }
 
   beforeUpdate({ entity, databaseEntity }: UpdateEvent<UserEntity>): void {
@@ -24,6 +31,9 @@ export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
     }
     if (entity.lastName !== databaseEntity.lastName) {
       entity.lastName = UtilsService.capitalizeFirst(entity.lastName);
+    }
+    if (entity.email !== databaseEntity.email) {
+      entity.email = entity.email.toLowerCase();
     }
   }
 }

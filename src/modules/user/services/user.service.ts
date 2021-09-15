@@ -46,4 +46,8 @@ export class UserService {
 
     return queryBuilder.getOne();
   }
+
+  public async getUser(uuid: string): Promise<UserEntity> {
+    return this.findUser({ uuid });
+  }
 }

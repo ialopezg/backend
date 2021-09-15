@@ -1,14 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { UserRegistrationDto, UserLoginDto } from 'modules/auth/dtos';
 import { UserEntity } from 'modules/user/entities';
 import { WrongCredentialsProvidedException } from 'modules/auth/exceptions';
-import { UserNotFoundException } from 'modules/user/exceptions';
+import { TokenPayloadInterface } from 'modules/auth/interfaces';
 import { UserService } from 'modules/user/services';
-import { UtilsService } from 'utils/services';
+import { validateHash } from 'utils/hash.util';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly _userService: UserService) {}
+  constructor(
+    private readonly _userService: UserService,
+    private readonly _jwtService: JwtService,
+    private readonly _configService: ConfigService,
+  ) {}
+
+  public getCookieWithJwtToken(uuid: string): string {
+    const payload: TokenPayloadInterface = { uuid };
+    const token = this._jwtService.sign(payload);
+
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this._configService.get(
+      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+    )}`;
+  }
+
+  public getCookieForLogout(): string {
+    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
+  }
 
   public async register(
     userRegistrationDto: UserRegistrationDto,
@@ -27,10 +46,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UserNotFoundException();
+      throw new WrongCredentialsProvidedException();
     }
 
-    const isPasswordValid = await this.validatePassword(
+    const isPasswordValid = await validateHash(
       password,
       user.userAuth.password,
     );
@@ -40,17 +59,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  public async validatePassword(
-    hashedPassword: string,
-    password: string,
-  ): Promise<boolean> {
-    const isPasswordValid = await UtilsService.validateHash(
-      password,
-      hashedPassword,
-    );
-
-    return isPasswordValid;
   }
 }
