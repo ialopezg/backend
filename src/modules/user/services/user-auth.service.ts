@@ -36,6 +36,15 @@ export class UserAuthService {
     return this._userService.findUser(options);
   }
 
+  public async updateRefreshToken(
+    userAuthId: number,
+    currentHashedRefreshToken: string,
+  ): Promise<UpdateResult> {
+    return this._userAuthRepository.update(userAuthId, {
+      currentHashedRefreshToken,
+    });
+  }
+
   private async _createPinCode(): Promise<number> {
     const pinCode = this._generatePinCode();
     const user = await this.findUserAuth({ pinCode });

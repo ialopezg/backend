@@ -38,7 +38,7 @@ async function bootstrap(): Promise<void> {
   );
   app.use(compression());
   app.use(morgan('combined'));
-  app.use(cookieParser);
+  app.use(cookieParser());
   app.setGlobalPrefix('api');
 
   const reflector = app.get(Reflector);

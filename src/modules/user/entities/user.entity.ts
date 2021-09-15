@@ -32,7 +32,10 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @UpdateDateColumn({ type: 'timestamp with time zone', nullable: true })
   updatedAt: Date;
 
-  @OneToOne(() => UserAuthEntity, (userAuth: UserAuthEntity) => userAuth.user)
+  @OneToOne(() => UserAuthEntity, (userAuth: UserAuthEntity) => userAuth.user, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   public userAuth: UserAuthEntity;
 
   dtoClass = UserDto;

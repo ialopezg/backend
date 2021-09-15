@@ -8,7 +8,10 @@ import { UserService } from 'modules/user/services';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtAccessTokenStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-access-token',
+) {
   constructor(
     private readonly _configService: ConfigService,
     private readonly _userService: UserService,

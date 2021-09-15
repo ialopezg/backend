@@ -17,9 +17,16 @@
 - **`API Documentation`**, is the technical content deliverable, containing instructions about how to effectively use and integrate with an API. It’s a concise reference manual containing all the information required to work with the API, with details about the functions, classes, return types, arguments and more, supported by tutorials and examples. API Documentation has traditionally been done using regular content creation and maintenance tools and text editors.
 
 ### Modules
+---
 
-- **`User`**. Mandatory module. Cannot be disabled. Used to handle and manage users, internal or external, data information.
-- **`Authentication & Authorization`**. Mandatory module. Cannot be disabled. Used to authenticate and authorize registered users. Depends of `User` Module.
+#### **`Users`**
+
+Mandatory module. Cannot be disabled. Used to handle and manage users, internal or external, data information.
+#### **`Authentication & Authorization`**
+
+Mandatory module. Cannot be disabled. Used to authenticate and authorize registered users. Implements `LocalStrategy` with JWT functionality that allow users to authenticate with username and password, returning a JWT for use in subsequent calls to protected API endpoints. In other words, the API routes are protected based on the presence of a valid JWT as a bearer token.
+
+> Depends of `Users` Module.
 
 ## Support
 

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { RoleType } from 'common/constants';
 import { AbstractEntity } from 'common/entities';
 import { UserAuthDto } from 'modules/user/dtos';
@@ -33,7 +34,13 @@ export class UserAuthEntity extends AbstractEntity<UserAuthDto> {
   @UpdateDateColumn({ type: 'timestamp with time zone', nullable: true })
   updatedAt: Date;
 
-  @OneToOne(() => UserEntity, (user: UserEntity) => user.userAuth)
+  @Column({ nullable: true })
+  @Exclude()
+  currentHashedRefreshToken?: string;
+
+  @OneToOne(() => UserEntity, (user: UserEntity) => user.userAuth, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   public user: UserEntity;
 

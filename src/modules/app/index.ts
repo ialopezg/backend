@@ -21,6 +21,8 @@ import { UserModule } from 'modules/user';
         DB_NAME: Joi.string(),
         JWT_ACCESS_TOKEN_SECRET_KEY: Joi.string().required(),
         JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET_KEY: Joi.string().required(),
+        JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
       }),
     }),
     DatabaseModule,

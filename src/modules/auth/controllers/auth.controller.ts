@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -9,18 +10,33 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserRegistrationDto } from 'modules/auth/dtos';
+import {
+  JwtAuthenticationGuard,
+  JwtRefreshGuard,
+  LocalAuthenticationGuard,
+} from 'modules/auth/guards';
 import { RequestWithUserInterface } from 'modules/auth/interfaces';
 import { AuthService } from 'modules/auth/services';
 import { UserDto } from 'modules/user/dtos';
-import { JwtAuthenticationGuard, LocalAuthenticationGuard } from '../guards';
+import { UserEntity } from 'modules/user/entities';
+import { UserService } from 'modules/user/services';
 
 @Controller('Auth')
 @ApiTags('Auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(private readonly _authService: AuthService) {}
+  constructor(
+    private readonly _authService: AuthService,
+    private readonly _userService: UserService,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
@@ -46,19 +62,63 @@ export class AuthController {
     type: UserDto,
   })
   @UseGuards(LocalAuthenticationGuard)
-  @ApiOperation({ summary: 'Sign up users into the system' })
+  @ApiOperation({ summary: 'Starts a new user session' })
   async login(@Req() request: RequestWithUserInterface): Promise<UserDto> {
-    const cookie = this._authService.getCookieWithJwtToken(request.user.uuid);
+    const [accessTokenCookie, refreshTokenCookie] =
+      await this._authService.login(request.user);
 
-    request.res.setHeader('Set-Cookie', cookie);
+    request.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
 
     return request.user.toDto();
+  }
+
+  @Get('/profile')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get current user profile',
+    type: UserDto,
+  })
+  @ApiOperation({ summary: 'Get current user profile' })
+  async userProfile(
+    @Req() { user }: RequestWithUserInterface,
+  ): Promise<UserDto> {
+    const userEntity = await this._userService.getUser(user.uuid);
+
+    return userEntity.toDto();
   }
 
   @UseGuards(JwtAuthenticationGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
-  async logout(@Req() request: RequestWithUserInterface) {
-    request.res.setHeader('Set-Cookie', this._authService.getCookieForLogout());
+  @ApiNoContentResponse({
+    description: 'Successfully Logout',
+  })
+  @ApiOperation({ summary: 'Closes current user session' })
+  async logout(@Req() request: RequestWithUserInterface): Promise<void> {
+    await this._authService.logout(request.user);
+
+    request.res.setHeader(
+      'Set-Cookie',
+      this._authService.getCookiesForLogout(),
+    );
+  }
+
+  @Get('refresh')
+  @UseGuards(JwtRefreshGuard)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get current user with access token updated',
+    type: UserDto,
+  })
+  async refresh(@Req() request: RequestWithUserInterface): Promise<UserEntity> {
+    const accessTokenCookie = this._authService.refreshToken(request.user);
+
+    request.res.setHeader('Set-Cookie', accessTokenCookie);
+
+    return request.user;
   }
 }

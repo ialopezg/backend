@@ -5,7 +5,7 @@ import {
   InsertEvent,
   UpdateEvent,
 } from 'typeorm';
-import { generateHash } from 'utils';
+import { encodeString, generateHash } from 'utils';
 
 @EventSubscriber()
 export class UserAuthSubscriber
@@ -27,8 +27,20 @@ export class UserAuthSubscriber
     entity,
     databaseEntity,
   }: UpdateEvent<UserAuthEntity>): Promise<void> {
-    if (entity?.password !== databaseEntity?.password) {
+    const password = await generateHash(entity.password);
+
+    if (password !== databaseEntity?.password) {
       entity.password = generateHash(entity.password);
+    }
+
+    if (entity.currentHashedRefreshToken) {
+      const currentHashedRefreshToken = await encodeString(
+        entity.currentHashedRefreshToken,
+      );
+
+      entity.currentHashedRefreshToken = await generateHash(
+        currentHashedRefreshToken,
+      );
     }
   }
 }
