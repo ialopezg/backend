@@ -8,7 +8,6 @@ import {
 import { UserAuthRepository } from 'modules/user/repositories';
 import { UserService } from 'modules/user/services';
 import { UpdateResult } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { UtilsService } from 'utils/services';
 
 @Injectable()
@@ -37,7 +36,10 @@ export class UserAuthService {
   }
 
   public async markEmailAsConfirmed(email: string): Promise<UpdateResult> {
-    return this._userAuthRepository.update({ email }, { active: true });
+    return this._userAuthRepository.update(
+      { email },
+      { isEmailConfirmed: true },
+    );
   }
 
   public async updateRefreshToken(

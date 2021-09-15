@@ -6,6 +6,7 @@ import { AuthController } from 'modules/auth/controllers';
 import { AuthService } from 'modules/auth/services';
 import {
   JwtAccessTokenStrategy,
+  JwtConfirmTokenStrategy,
   JwtRefreshTokenStrategy,
   LocalStrategy,
 } from 'modules/auth/strategies';
@@ -37,6 +38,7 @@ import { UserModule } from 'modules/user';
     LocalStrategy,
     JwtAccessTokenStrategy,
     JwtRefreshTokenStrategy,
+    JwtConfirmTokenStrategy,
   ],
   exports: [AuthService],
 })

@@ -5,6 +5,7 @@ import {
   ExpressAdapter,
   NestExpressApplication,
 } from '@nestjs/platform-express';
+import * as express from 'express';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as RateLimit from 'express-rate-limit';
@@ -29,33 +30,28 @@ async function bootstrap(): Promise<void> {
   );
 
   app.enable('trust proxy');
+  app.use(cookieParser());
   app.use(helmet());
   app.use(
     RateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 100,
+      max: 200,
     }),
   );
   app.use(compression());
+  app.use(express.json({ limit: '1mb' }));
+  app.use(express.urlencoded({ extended: true }));
   app.use(morgan('combined'));
-  app.use(cookieParser());
   app.setGlobalPrefix('api');
 
   const reflector = app.get(Reflector);
 
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
   app.useGlobalFilters(
     new HttpExceptionFilter(reflector),
     new QueryFailedFilter(reflector),
   );
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      // dismissDefaultMessages: true,
-      validationError: { target: false },
-    }),
-  );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   setupSwagger(app);
 

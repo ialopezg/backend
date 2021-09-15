@@ -113,20 +113,16 @@ export class AuthService {
     return token;
   }
 
-  public async resendConfirmationLink(uuid: string): Promise<void> {
-    const user = await this._userService.getUser(uuid);
-
-    if (user.userAuth.active) {
+  public async resendConfirmationLink(user: UserEntity): Promise<void> {
+    if (user.userAuth.isEmailConfirmed) {
       throw new BadRequestException('Email already confirmed');
     }
 
     await this._mailService.sendConfirmationEmail(user);
   }
 
-  public async confirm(token: string) {
-    const email = await this._decodeConfirmationToken(token);
-
-    return this._confirmEmail(email);
+  public async confirm(user: UserEntity): Promise<void> {
+    await this._userAuthService.markEmailAsConfirmed(user.userAuth.email);
   }
 
   private _getCookieWithJwtToken(uuid: string): string {
@@ -156,35 +152,5 @@ export class AuthService {
     )}`;
 
     return { cookie, token };
-  }
-
-  private async _decodeConfirmationToken(token: string): Promise<string> {
-    try {
-      const payload = await this._jwtService.verify(token, {
-        secret: this._configService.get('JWT_VERIFICATION_TOKEN_SECRET_KEY'),
-      });
-
-      if (typeof payload === 'object' && 'userAuth' in payload) {
-        return payload.userAuth.email;
-      }
-
-      throw new BadRequestException();
-    } catch (error) {
-      if (error?.name === 'TokenExpiredError') {
-        throw new BadRequestException('Email confirmation token expired');
-      }
-
-      throw new BadRequestException('Bad confirmation token');
-    }
-  }
-
-  private async _confirmEmail(email: string): Promise<void> {
-    const user = await this._userService.findUser({ email });
-
-    if (user.userAuth.active) {
-      throw new BadRequestException('Email already confirmed');
-    }
-
-    await this._userAuthService.markEmailAsConfirmed(email);
   }
 }

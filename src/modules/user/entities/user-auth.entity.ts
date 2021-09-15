@@ -43,7 +43,7 @@ export class UserAuthEntity extends AbstractEntity<UserAuthDto> {
 
   @Column({ default: false })
   @Exclude()
-  active: boolean;
+  isEmailConfirmed: boolean;
 
   @OneToOne(() => UserEntity, (user: UserEntity) => user.userAuth, {
     onDelete: 'CASCADE',

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { AbstractEntity } from 'common/entities';
 import { UserDto } from 'modules/user/dtos';
 import { Column, CreateDateColumn, Entity, OneToOne, UpdateDateColumn } from 'typeorm';
@@ -24,9 +25,11 @@ export class UserEntity extends AbstractEntity<UserDto> {
   avatar?: string;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
+  @Exclude()
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp with time zone', nullable: true })
+  @Exclude()
   updatedAt: Date;
 
   @OneToOne(() => UserAuthEntity, (userAuth: UserAuthEntity) => userAuth.user, {

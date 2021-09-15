@@ -6,6 +6,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -17,10 +18,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ConfirmEmailDto, UserRegistrationDto } from 'modules/auth/dtos';
+import { UserRegistrationDto } from 'modules/auth/dtos';
 import {
   EmailConfirmationGuard,
   JwtAccessTokenGuard,
+  JwtConfirmTokenGuard,
   JwtRefreshTokenGuard,
   LocalAuthenticationGuard,
 } from 'modules/auth/guards';
@@ -59,6 +61,7 @@ export class AuthController {
     return user.toDto();
   }
 
+  @UseGuards(LocalAuthenticationGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
@@ -66,7 +69,6 @@ export class AuthController {
     status: HttpStatus.OK,
     type: UserDto,
   })
-  @UseGuards(LocalAuthenticationGuard)
   @ApiOperation({ summary: 'Starts a new user session' })
   async login(@Req() request: RequestWithUserInterface): Promise<UserDto> {
     const [accessTokenCookie, refreshTokenCookie] =
@@ -80,8 +82,8 @@ export class AuthController {
     return request.user.toDto();
   }
 
-  @Get('/profile')
   @UseGuards(JwtRefreshTokenGuard, EmailConfirmationGuard)
+  @Get('/profile')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -110,8 +112,8 @@ export class AuthController {
     );
   }
 
-  @Get('refresh')
   @UseGuards(JwtRefreshTokenGuard)
+  @Get('refresh')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'User information with a new access token',
@@ -126,24 +128,25 @@ export class AuthController {
     return request.user;
   }
 
-  @Post('confirm')
+  @UseGuards(JwtConfirmTokenGuard)
+  @Patch('confirm')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Finish the confirmation email process for current user',
   })
-  async confirm(@Body() { token }: ConfirmEmailDto): Promise<void> {
-    return this._authService.confirm(token);
+  async confirm(@Req() request: RequestWithUserInterface): Promise<void> {
+    return this._authService.confirm(request.user);
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @Post('resend/confirmation/link')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtAccessTokenGuard)
   @ApiOperation({
     summary: 'Resend the confirmation link for current user',
   })
   async resendConfirmationLink(
     @Req() request: RequestWithUserInterface,
   ): Promise<void> {
-    await this._authService.resendConfirmationLink(request.user.uuid);
+    await this._authService.resendConfirmationLink(request.user);
   }
 }

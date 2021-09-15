@@ -13,7 +13,7 @@ export class EmailConfirmationGuard implements CanActivate {
       .switchToHttp()
       .getRequest();
 
-    if (!request.user?.userAuth.active) {
+    if (!request.user?.userAuth.isEmailConfirmed) {
       throw new UnauthorizedException('Confirm your email first');
     }
 

@@ -28,6 +28,10 @@ Mandatory module. Cannot be disabled. Used to authenticate and authorize registe
 
 > Depends of `Users` Module.
 
+#### **`Mail`**
+
+Send emails throughout the entire Nest application. All modules can inject the Mail Service to perform emailing tasks according as their needs.
+
 ## Support
 
 API Boilerplate is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://ialopezg.com/api-boilerplate).
