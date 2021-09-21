@@ -30,7 +30,6 @@ import { RequestWithUserInterface } from 'modules/auth/interfaces';
 import { AuthService } from 'modules/auth/services';
 import { MailService } from 'modules/mail/services';
 import { UserDto } from 'modules/user/dtos';
-import { UserEntity } from 'modules/user/entities';
 import { UserService } from 'modules/user/services';
 
 @Controller('Auth')
@@ -83,7 +82,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtRefreshTokenGuard, EmailConfirmationGuard)
-  @Get('/profile')
+  @Get('profile')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -120,12 +119,10 @@ export class AuthController {
     type: UserDto,
   })
   @ApiOperation({ summary: 'Refresh current user access token' })
-  async refresh(@Req() request: RequestWithUserInterface): Promise<UserEntity> {
+  async refresh(@Req() request: RequestWithUserInterface): Promise<void> {
     const accessTokenCookie = this._authService.refreshToken(request.user);
 
     request.res.setHeader('Set-Cookie', accessTokenCookie);
-
-    return request.user;
   }
 
   @UseGuards(JwtConfirmTokenGuard)
@@ -134,19 +131,21 @@ export class AuthController {
   @ApiOperation({
     summary: 'Finish the confirmation email process for current user',
   })
-  async confirm(@Req() request: RequestWithUserInterface): Promise<void> {
-    return this._authService.confirm(request.user);
+  async confirm(@Req() { user }: RequestWithUserInterface): Promise<void> {
+    console.log(this.userProfile);
+
+    return this._authService.confirm(user);
   }
 
   @UseGuards(JwtAccessTokenGuard)
-  @Post('resend/confirmation/link')
+  @Post('confirm/resend')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Resend the confirmation link for current user',
   })
   async resendConfirmationLink(
-    @Req() request: RequestWithUserInterface,
+    @Req() { user }: RequestWithUserInterface,
   ): Promise<void> {
-    await this._authService.resendConfirmationLink(request.user);
+    await this._authService.resendConfirmationLink(user);
   }
 }

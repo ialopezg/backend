@@ -7,7 +7,7 @@ export function setupSwagger(app: INestApplication): void {
 
   const options = new DocumentBuilder()
     .setTitle(
-      configService.get('SWAGGER_API_TITLE') || process.env.npm_package_name,
+      configService.get('APP_SITE_TITLE') || process.env.npm_package_name,
     )
     .setDescription(
       configService.get('SWAGGER_API_DESCRIPTION') ||

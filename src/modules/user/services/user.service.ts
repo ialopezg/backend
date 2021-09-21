@@ -4,6 +4,7 @@ import { UserEntity } from 'modules/user/entities';
 import { UserRepository } from 'modules/user/repositories';
 import { UserAuthService } from 'modules/user/services';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { isEmail, isNumeric, isUUID } from 'utils';
 
 @Injectable()
 export class UserService {
@@ -20,7 +21,6 @@ export class UserService {
     const createdUser = { ...userCreateDto, user };
 
     await Promise.all([this._userAuthService.createUserAuth(createdUser)]);
-    console.log(createdUser);
 
     return this.findUser({ uuid: user.uuid });
   }
@@ -32,17 +32,17 @@ export class UserService {
 
     queryBuilder.leftJoinAndSelect('user.userAuth', 'userAuth');
 
-    if (options.uuid) {
+    if (options.uuid && isUUID(options.uuid)) {
       queryBuilder.orWhere('user.uuid = :uuid', { uuid: options.uuid });
     }
 
-    if (options.pinCode) {
+    if (options.pinCode && isNumeric(options.pinCode)) {
       queryBuilder.orWhere('userAuth.pinCode = :pinCode', {
         pinCode: options.pinCode,
       });
     }
 
-    if (options.email) {
+    if (options.email && isEmail(options.email)) {
       queryBuilder.orWhere('userAuth.email = :email', { email: options.email });
     }
 

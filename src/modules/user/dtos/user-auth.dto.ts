@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AbstractDto } from 'common/dtos';
-import { UserAuthEntity } from 'modules/user/entities';
+
+import { AbstractDto } from '../../../common/dtos';
+import { UserAuthEntity } from '../entities';
 
 export class UserAuthDto extends AbstractDto {
   @ApiProperty({ description: 'User pin code' })

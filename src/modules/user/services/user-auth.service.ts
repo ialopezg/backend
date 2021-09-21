@@ -1,5 +1,11 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { RoleType } from 'common/constants';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+import { RoleType } from 'modules/auth/constants';
+import { PostgresErrorCode } from 'modules/database/constraints';
 import { UserAuthEntity, UserEntity } from 'modules/user/entities';
 import {
   PinCodeGenerationErrorException,
@@ -25,6 +31,10 @@ export class UserAuthService {
     try {
       return this._userAuthRepository.save(auth);
     } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new BadRequestException('User with that email already exists');
+      }
+
       throw new UserCreationException(error);
     }
   }

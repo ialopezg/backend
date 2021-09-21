@@ -1,21 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { AbstractDto } from 'common/dtos';
-import { UserAuthDto } from 'modules/user/dtos';
-import { UserEntity } from 'modules/user/entities';
+
+import { AbstractDto } from '../../../common/dtos';
+import { UserAuthDto } from '../dtos';
+import { UserEntity } from '../entities';
 
 export class UserDto extends AbstractDto {
   @ApiProperty({ description: 'User first name' })
   readonly firstName: string;
 
   @ApiPropertyOptional({ description: 'User middle name' })
-  readonly middleName: string;
+  readonly middleName?: string;
 
   @ApiProperty({ description: 'User last name' })
   readonly lastName: string;
 
   @ApiPropertyOptional({ description: 'User mother name' })
-  readonly motherName: string;
+  readonly motherName?: string;
 
   @ApiPropertyOptional({ description: 'User phone number' })
   readonly phone?: string;

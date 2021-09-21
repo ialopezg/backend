@@ -51,10 +51,25 @@ export class MailProcessor {
     try {
       return this._mailerService.sendMail({
         to: job.data.user.userAuth.email,
-        from: this._configService.get('EMAIL_ADDRESS'),
-        subject: 'Registration',
+        from: this._configService.get('EMAIL_FROM'),
+        subject: 'User registration',
         template: './registration',
-        context: { confirmUrl: job.data.confirmUrl },
+        context: {
+          confirmUrl: job.data.confirmUrl,
+          recipientName: job.data.user.firstName,
+          apiTitle: this._configService.get('APP_SITE_TITLE'),
+          apiLogoUrl: this._configService.get('APP_SITE_LOGO_URL'),
+          senderName: this._configService.get('APP_SITE_TITLE'),
+          senderAddress: this._configService.get('APP_CONTACT_ADDRESS'),
+          senderCity: this._configService.get('APP_CONTACT_CITY'),
+          senderState: this._configService.get('APP_CONTACT_STATE_ABBR'),
+          senderPostalCode: this._configService.get('APP_CONTACT_POSTAL_CODE'),
+          contactUrl: this._configService.get('APP_CONTACT_URL'),
+          unsubscribeUrl: this._configService.get('APP_UNSUBSCRIBE_URL'),
+          unsubscribePreferencesUrl: this._configService.get(
+            'APP_UNSUBSCRIBE_PREFERENCES_URL',
+          ),
+        },
       });
     } catch {
       this._logger.error(

@@ -1,8 +1,15 @@
 import { Exclude } from 'class-transformer';
-import { AbstractEntity } from 'common/entities';
-import { UserDto } from 'modules/user/dtos';
-import { Column, CreateDateColumn, Entity, OneToOne, UpdateDateColumn } from 'typeorm';
-import { UserAuthEntity } from '.';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  UpdateDateColumn,
+} from 'typeorm';
+
+import { AbstractEntity } from '../../../common/entities';
+import { UserDto } from '../dtos';
+import { UserAuthEntity } from '../entities';
 
 @Entity({ name: 'users' })
 export class UserEntity extends AbstractEntity<UserDto> {
@@ -17,6 +24,10 @@ export class UserEntity extends AbstractEntity<UserDto> {
 
   @Column({ nullable: true })
   motherName?: string;
+
+  get shortName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
 
   @Column({ unique: true, nullable: true })
   phone?: string;
@@ -39,4 +50,96 @@ export class UserEntity extends AbstractEntity<UserDto> {
   public userAuth: UserAuthEntity;
 
   dtoClass = UserDto;
+
+  constructor(
+    firstName: string,
+    middleName?: string,
+    lastName?: string,
+    motherName?: string,
+    phone?: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  );
+  constructor(
+    firstName: string,
+    middleName: string,
+    lastName?: string,
+    motherName?: string,
+    phone?: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  );
+  constructor(
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    motherName?: string,
+    phone?: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  );
+  constructor(
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    motherName: string,
+    phone?: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  );
+  constructor(
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    motherName: string,
+    phone: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  );
+  constructor(
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    motherName: string,
+    phone: string,
+    avatar: string,
+    userAuth?: UserAuthEntity,
+  );
+  constructor(
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    motherName: string,
+    phone: string,
+    avatar: string,
+    userAuth: UserAuthEntity,
+  );
+  constructor(
+    firstName?: string,
+    middleName?: string,
+    lastName?: string,
+    motherName?: string,
+    phone?: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  )
+  constructor(
+    firstName?: string,
+    middleName?: string,
+    lastName?: string,
+    motherName?: string,
+    phone?: string,
+    avatar?: string,
+    userAuth?: UserAuthEntity,
+  ) {
+    super();
+
+    this.firstName = firstName || '';
+    this.middleName = middleName || '';
+    this.lastName = lastName || '';
+    this.motherName = motherName || '';
+    this.phone = phone || '';
+    this.avatar = avatar || '';
+    this.userAuth = userAuth || undefined;
+  }
 }

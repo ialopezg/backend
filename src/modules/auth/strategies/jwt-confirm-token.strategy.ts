@@ -26,6 +26,8 @@ export class JwtConfirmTokenStrategy extends PassportStrategy(
   public async validate({
     email,
   }: VerificationTokenPayload): Promise<UserEntity> {
+    console.log('validating', email);
+
     const user = await this._userService.findUser({ email });
 
     if (!user) {

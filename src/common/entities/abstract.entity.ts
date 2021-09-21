@@ -1,6 +1,7 @@
-import { AbstractDto } from 'common/dtos';
 import { Column, Generated, PrimaryGeneratedColumn } from 'typeorm';
-import { UtilsService } from 'utils/services';
+
+import { UtilsService } from '../../utils/services';
+import { AbstractDto } from '../dtos';
 
 export abstract class AbstractEntity<T extends AbstractDto = AbstractDto> {
   @PrimaryGeneratedColumn('increment')
@@ -14,5 +15,13 @@ export abstract class AbstractEntity<T extends AbstractDto = AbstractDto> {
 
   toDto(options?: any): T {
     return UtilsService.toDto(this.dtoClass, this, options);
+  }
+
+  constructor(id: number, uuid?: string);
+  constructor(id: number, uuid: string);
+  constructor(id?: number, uuid?: string);
+  constructor(id?: number, uuid?: string) {
+    this.id = id;
+    this.uuid = uuid;
   }
 }

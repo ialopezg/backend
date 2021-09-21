@@ -17,11 +17,11 @@ export class MailService {
     @InjectQueue(MAIL_QUEUE) private readonly _mailQueue: Queue,
   ) {}
 
-  public async sendConfirmationEmail(user: UserEntity): Promise<any> {
+  public async sendConfirmationEmail(user: UserEntity): Promise<void> {
     const confirmUrl = this._getConfirmUrl(user.userAuth.email);
 
     try {
-      return this._mailQueue.add(CONFIRM_REGISTRATION, { user, confirmUrl });
+      await this._mailQueue.add(CONFIRM_REGISTRATION, { user, confirmUrl });
     } catch (error) {
       this._logger.error(
         `Error queueing registration email to user ${user.userAuth.email}`,

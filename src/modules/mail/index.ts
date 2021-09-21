@@ -26,7 +26,7 @@ import { MailService } from 'modules/mail/services';
           },
           tls: { rejectUnauthorized: false },
         },
-        defaults: { from: configService.get('EMAIL_DEFAULTS_FROM') },
+        defaults: { from: configService.get('EMAIL_FROM') },
         template: {
           dir: __dirname + '/templates',
           adapter: new HandlebarsAdapter(),

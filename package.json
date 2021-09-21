@@ -1,6 +1,6 @@
 {
   "name": "api-boilerplate",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "A basic skeleton with class abstraction, global & local validation, global & local exception handlers, logging &data tracking, data transfer objects, execution context, authentication, users & user roles, migrations, and default dispatchers built with NestJS",
   "author": "Isidro A. López G. <me@ialopezg.com> (https://ialopezg.com)",
   "license": "MIT",
@@ -110,6 +110,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }

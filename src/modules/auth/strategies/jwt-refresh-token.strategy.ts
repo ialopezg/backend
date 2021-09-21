@@ -37,7 +37,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     { uuid }: TokenPayloadInterface,
   ): Promise<UserEntity> {
     const refreshToken = request.cookies?.Refresh;
-    const encodedRefreshToken = await encodeString(refreshToken);
+    const encodedRefreshToken = encodeString(refreshToken);
     const user = await this._userService.getUser(uuid);
 
     if (!user) {

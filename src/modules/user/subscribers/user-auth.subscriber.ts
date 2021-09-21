@@ -16,8 +16,6 @@ export class UserAuthSubscriber
   }
 
   async beforeInsert({ entity }: InsertEvent<UserAuthEntity>): Promise<void> {
-    console.log('event', entity);
-
     if (entity.password) {
       entity.password = await generateHash(entity.password);
     }
@@ -30,18 +28,22 @@ export class UserAuthSubscriber
     entity,
     databaseEntity,
   }: UpdateEvent<UserAuthEntity>): Promise<void> {
-    const password = await generateHash(entity.password);
+    if (entity.password) {
+      const password = await generateHash(entity.password);
 
-    if (password !== databaseEntity?.password) {
-      entity.password = generateHash(entity.password);
+      if (password !== databaseEntity?.password) {
+        entity.password = generateHash(entity.password);
+      }
     }
 
-    if (entity.email !== databaseEntity.email) {
-      entity.email = entity.email.toLowerCase();
+    if (entity.email) {
+      if (entity.email !== databaseEntity.email) {
+        entity.email = entity.email.toLowerCase();
+      }
     }
 
     if (entity.currentHashedRefreshToken) {
-      const currentHashedRefreshToken = await encodeString(
+      const currentHashedRefreshToken = encodeString(
         entity.currentHashedRefreshToken,
       );
 
