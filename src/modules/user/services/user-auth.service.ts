@@ -4,17 +4,18 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { RoleType } from 'modules/auth/constants';
-import { PostgresErrorCode } from 'modules/database/constraints';
-import { UserAuthEntity, UserEntity } from 'modules/user/entities';
+import { UpdateResult } from 'typeorm';
+
+import { RoleType } from '../../auth/constants';
+import { PostgresErrorCode } from '../../database/constraints';
+import { UserAuthEntity, UserEntity } from '../../user/entities';
 import {
   PinCodeGenerationErrorException,
   UserCreationException,
-} from 'modules/user/exceptions';
-import { UserAuthRepository } from 'modules/user/repositories';
-import { UserService } from 'modules/user/services';
-import { UpdateResult } from 'typeorm';
-import { UtilsService } from 'utils/services';
+} from '../../user/exceptions';
+import { UserAuthRepository } from '../../user/repositories';
+import { UserService } from '../../user/services';
+import { UtilsService } from '../../../utils/services';
 
 @Injectable()
 export class UserAuthService {

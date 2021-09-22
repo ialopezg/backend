@@ -19,18 +19,7 @@ import { UserModule } from 'modules/user';
     PassportModule,
     ConfigModule,
     forwardRef(() => MailModule),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
-        signOptions: {
-          expiresIn: `${configService.get(
-            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-          )}s`,
-        },
-      }),
-    }),
+    JwtModule.register({}),
   ],
   controllers: [AuthController],
   providers: [

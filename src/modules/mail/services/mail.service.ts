@@ -2,9 +2,10 @@ import { InjectQueue } from '@nestjs/bull';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue } from 'bull';
-import { AuthService } from 'modules/auth/services';
-import { CONFIRM_REGISTRATION, MAIL_QUEUE } from 'modules/mail/constants';
-import { UserEntity } from 'modules/user/entities';
+
+import { AuthService } from '../../auth/services';
+import { CONFIRM_REGISTRATION, MAIL_QUEUE } from '../../mail/constants';
+import { UserEntity } from '../../user/entities';
 
 @Injectable()
 export class MailService {

@@ -1,19 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserRegistrationDto, UserLoginDto } from 'modules/auth/dtos';
-import { UserEntity } from 'modules/user/entities';
+
+import { UserRegistrationDto, UserLoginDto } from '../dtos';
 import {
   RefreshTokenNotMatchingException,
   WrongCredentialsProvidedException,
-} from 'modules/auth/exceptions';
-import {
-  TokenPayloadInterface,
-  VerificationTokenPayload,
-} from 'modules/auth/interfaces';
-import { MailService } from 'modules/mail/services';
-import { UserAuthService, UserService } from 'modules/user/services';
-import { validateHash } from 'utils/hash.util';
+} from '../exceptions';
+import { TokenPayloadInterface, VerificationTokenPayload } from '../interfaces';
+import { MailService } from '../../mail/services';
+import { UserEntity } from '../../user/entities';
+import { UserAuthService, UserService } from '../../user/services';
+import { validateHash } from '../../../utils';
 
 @Injectable()
 export class AuthService {
@@ -86,11 +84,11 @@ export class AuthService {
   }
 
   public async getUserIfRefreshTokenMatches(
-    refreahToken: string,
+    refreshToken: string,
     user: UserEntity,
   ): Promise<UserEntity> {
     const isRefreshTokenMatching = await validateHash(
-      refreahToken,
+      refreshToken,
       user.userAuth.currentHashedRefreshToken,
     );
 

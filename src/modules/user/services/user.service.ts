@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UserCreateDto } from 'modules/user/dtos';
-import { UserEntity } from 'modules/user/entities';
-import { UserRepository } from 'modules/user/repositories';
-import { UserAuthService } from 'modules/user/services';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { isEmail, isNumeric, isUUID } from 'utils';
+
+import { UserCreateDto } from '../dtos';
+import { UserEntity } from '../entities';
+import { UserRepository } from '../repositories';
+import { UserAuthService } from '../services';
+import { isEmail, isNumeric, isUUID } from '../../../utils';
 
 @Injectable()
 export class UserService {
