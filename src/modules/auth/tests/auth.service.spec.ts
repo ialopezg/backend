@@ -2,41 +2,41 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
 
+import { RoleType } from '../constants';
 import { AuthService } from '../services';
-import { MAIL_QUEUE } from '../../mail/constants';
-import { MailService } from '../../mail/services';
+import { UserEntity, UserAuthEntity } from '../../user/entities';
+import { UserService, UserAuthService } from '../../user/services';
 import { UserAuthRepository, UserRepository } from '../../user/repositories';
-import { UserAuthService, UserService } from '../../user/services';
 import {
-  ConnectionMock,
   mockedConfigService,
   mockedJwtService,
+  mockedUserRepository,
+  mockedUserService,
 } from '../../../utils/mocks';
+import { MAIL_QUEUE } from '../../mail/constants';
+import { MailService } from '../../mail/services';
 
 describe('AuthService', () => {
   let module: TestingModule;
-  let authService: AuthService;
+  let service: AuthService;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [BullModule.registerQueue({ name: MAIL_QUEUE })],
       providers: [
-        UserService,
+        { provide: UserService, useValue: mockedUserService },
         UserAuthService,
         AuthService,
         MailService,
         { provide: ConfigService, useValue: mockedConfigService },
         { provide: JwtService, useValue: mockedJwtService },
-        { provide: getRepositoryToken(UserRepository), useValue: {} },
-        { provide: getRepositoryToken(UserAuthRepository), useValue: {} },
-        { provide: Connection, useClass: ConnectionMock },
+        { provide: UserRepository, useValue: mockedUserRepository },
+        { provide: UserAuthRepository, useValue: {} },
       ],
     }).compile();
 
-    authService = await module.get(AuthService);
+    service = await module.get(AuthService);
   });
 
   afterEach(async () => {
@@ -44,20 +44,35 @@ describe('AuthService', () => {
   });
 
   it('should be defined', () => {
-    expect(authService).toBeDefined();
+    expect(service).toBeDefined();
   });
 
-  describe('when creating a cookie', () => {
-    it('should return a string', () => {
-      const email = 'test@example.com';
+  describe('when getting a authentication by email', () => {
+    describe('and the user is matched', () => {
+      let user: UserEntity;
 
-      expect(typeof authService.getJwtConfirmToken(email)).toEqual('string');
-    });
-  });
+      beforeEach(() => {
+        user = new UserEntity(
+          'John',
+          null,
+          'Doe',
+          null,
+          '+13101234567',
+          null,
+          new UserAuthEntity(RoleType.USER, 'test@test.com', '123123'),
+        );
 
-  describe('when removing a cookie', () => {
-    it('should return a object', () => {
-      expect(typeof authService.getCookiesForLogout()).toEqual('object');
+        mockedUserService.findUser.mockReturnValue(Promise.resolve(user));
+      });
+
+      it('should return the user', async () => {
+        const fetchedUser = await service.validateUser({
+          identifier: 'test@example.com',
+          password: '123123',
+        });
+
+        expect(fetchedUser).toEqual(user);
+      });
     });
   });
 });

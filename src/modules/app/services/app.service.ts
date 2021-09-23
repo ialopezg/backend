@@ -6,5 +6,6 @@ export class AppService {
 
   async onModuleInit() {
     this._logger.log('AppService has been initialized.');
+    this._logger.log(`Current environment: ${process.env.NODE_ENV}`);
   }
 }

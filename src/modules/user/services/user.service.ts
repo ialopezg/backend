@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 
-import { UserCreateDto } from '../dtos';
+import { UserCreateDto, UserDto } from '../dtos';
 import { UserEntity } from '../entities';
 import { UserRepository } from '../repositories';
 import { UserAuthService } from '../services';
 import { isEmail, isNumeric, isUUID } from '../../../utils';
+import { PageDto, PageMetaDto, PageOptionsDto } from 'common/dtos';
 
 @Injectable()
 export class UserService {
@@ -50,7 +51,19 @@ export class UserService {
     return queryBuilder.getOne();
   }
 
-  public async getUser(uuid: string): Promise<UserEntity> {
+  public async getUser(uuid: string): Promise<UserEntity | undefined> {
     return this.findUser({ uuid });
+  }
+
+  public async getUsers(options: PageOptionsDto): Promise<PageDto<UserDto>> {
+    const queryBuilder = this._userRepository.createQueryBuilder('user');
+
+    const [users, itemCount] = await queryBuilder
+      .orderBy('user.createdAt', options.order)
+      .skip(options.skip)
+      .take(options.take)
+      .getManyAndCount();
+
+    return new PageDto(users.toDtos(), new PageMetaDto({ options, itemCount }));
   }
 }

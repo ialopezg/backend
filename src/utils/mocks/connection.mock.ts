@@ -5,7 +5,7 @@ const qr = {
 } as QueryRunner;
 
 export class ConnectionMock {
-  createQueryRunner(mode?: 'master' | 'slave'): QueryRunner {
+  createQueryRunner(mode ?: 'master' | 'slave'): QueryRunner {
     return qr;
   }
 }

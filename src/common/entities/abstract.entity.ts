@@ -1,4 +1,10 @@
-import { Column, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  Generated,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { UtilsService } from '../../utils/services';
 import { AbstractDto } from '../dtos';
@@ -11,17 +17,22 @@ export abstract class AbstractEntity<T extends AbstractDto = AbstractDto> {
   @Generated('uuid')
   uuid: string;
 
+  @CreateDateColumn()
+  @Exclude()
+  public createdAt: Date;
+
   abstract dtoClass: new (entity: AbstractEntity, options?: any) => T;
 
   toDto(options?: any): T {
     return UtilsService.toDto(this.dtoClass, this, options);
   }
 
-  constructor(id: number, uuid?: string);
-  constructor(id: number, uuid: string);
-  constructor(id?: number, uuid?: string);
-  constructor(id?: number, uuid?: string) {
+  constructor(id: number, uuid?: string, createdAt?: Date);
+  constructor(id: number, uuid: string, createdAt?: Date);
+  constructor(id?: number, uuid?: string, createdAt?: Date);
+  constructor(id?: number, uuid?: string, createdAt?: Date) {
     this.id = id;
     this.uuid = uuid;
+    this.createdAt = createdAt;
   }
 }

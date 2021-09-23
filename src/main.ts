@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {ClassSerializerInterceptor, Logger, ValidationPipe} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import {
@@ -18,6 +18,8 @@ import {
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
 import { setupSwagger } from 'utils/swagger';
+import { removeSlashAtEnd } from 'utils/path.utils';
+import {AppService} from "modules/app/services";
 
 async function bootstrap(): Promise<void> {
   initializeTransactionalContext();
@@ -42,7 +44,6 @@ async function bootstrap(): Promise<void> {
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan('combined'));
-  app.setGlobalPrefix('api');
 
   const reflector = app.get(Reflector);
 
@@ -56,7 +57,16 @@ async function bootstrap(): Promise<void> {
   setupSwagger(app);
 
   const configService = app.get(ConfigService);
+
+  app.setGlobalPrefix(configService.get('APP_PREFIX'));
+
   await app.listen(configService.get('APP_PORT'));
+  Logger.log(
+    `Application is running on: ${
+      (await app.getUrl()).removeSlashAtEnd() + '/'
+    }${configService.get('APP_PREFIX')}`,
+    'InstanceLoader',
+  );
 }
 
 void bootstrap();

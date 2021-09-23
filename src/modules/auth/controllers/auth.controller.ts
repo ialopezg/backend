@@ -100,7 +100,7 @@ export class AuthController {
 
   @UseGuards(JwtAccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('logout')
+  @Patch('logout')
   @ApiOperation({ summary: 'Delete current user session' })
   async logout(@Req() request: RequestWithUserInterface): Promise<void> {
     await this._authService.logout(request.user);

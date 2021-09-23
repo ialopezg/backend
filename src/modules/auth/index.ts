@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from 'modules/auth/controllers';
 import { AuthService } from 'modules/auth/services';
@@ -19,7 +20,18 @@ import { UserModule } from 'modules/user';
     PassportModule,
     ConfigModule,
     forwardRef(() => MailModule),
-    JwtModule.register({}),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
+        signOptions: {
+          expiresIn: `${configService.get(
+            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+          )}s`,
+        },
+      }),
+    }),
   ],
   controllers: [AuthController],
   providers: [
@@ -28,6 +40,10 @@ import { UserModule } from 'modules/user';
     JwtAccessTokenStrategy,
     JwtRefreshTokenStrategy,
     JwtConfirmTokenStrategy,
+    {
+      provide: 'MAIL_SERVICE',
+      useFactory: () => ClientProxyFactory.create({ transport: Transport.TCP }),
+    },
   ],
   exports: [AuthService],
 })
