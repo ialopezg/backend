@@ -3,7 +3,7 @@ import 'providers/polyfill.provider';
 import { BullModule } from '@nestjs/bull';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from 'joi';
+import Joi from 'joi';
 import { contextMiddleware } from 'middlewares';
 import { DatabaseModule } from 'modules/database';
 import { AppService } from 'modules/app/services';

@@ -1,25 +1,27 @@
-import {ClassSerializerInterceptor, Logger, ValidationPipe} from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import {
   ExpressAdapter,
   NestExpressApplication,
 } from '@nestjs/platform-express';
-import * as express from 'express';
-import * as compression from 'compression';
-import * as cookieParser from 'cookie-parser';
-import * as RateLimit from 'express-rate-limit';
+import express from 'express';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import RateLimit from 'express-rate-limit';
 import { HttpExceptionFilter, QueryFailedFilter } from 'filters';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 import { AppModule } from 'modules/app';
-import * as morgan from 'morgan';
+import morgan from 'morgan';
 import {
   initializeTransactionalContext,
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
 import { setupSwagger } from 'utils/swagger';
-import { removeSlashAtEnd } from 'utils/path.utils';
-import {AppService} from "modules/app/services";
 
 async function bootstrap(): Promise<void> {
   initializeTransactionalContext();

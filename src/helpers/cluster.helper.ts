@@ -1,5 +1,5 @@
 import cluster from 'cluster';
-import * as os from 'os';
+import os from 'os';
 
 export function runInCluster(bootstrap: () => Promise<void>) {
   const numberOfCores = os.cpus.length;
