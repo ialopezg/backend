@@ -2,6 +2,8 @@
 
 # Table of Content
 - [Overview](docs/overview.md)
+- [Development](docs/development/get-started.md)
+    - [Database installation](docs/development/database.md)
 - [Modules](docs/modules)
     - [Users](docs/modules/user.md)
     - [Authentication & Authorization](docs/modules/auth.md)
