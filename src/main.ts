@@ -47,6 +47,17 @@ async function bootstrap(): Promise<void> {
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan('combined'));
 
+  const configService = app.get(ConfigService);
+
+  // Base URL
+  const apiPrefix =
+    configService.get('NODE_ENV') === 'development'
+      ? configService.get('APP_PREFIX').toString().removeSlashAtEnd()
+      : '';
+  if (apiPrefix.length) {
+    app.setGlobalPrefix(configService.get('APP_PREFIX'));
+  }
+
   const reflector = app.get(Reflector);
 
   app.useGlobalFilters(
@@ -58,17 +69,12 @@ async function bootstrap(): Promise<void> {
 
   setupSwagger(app);
 
-  const configService = app.get(ConfigService);
-
   app.setGlobalPrefix(configService.get('APP_PREFIX'));
 
   await app.listen(configService.get('APP_PORT'));
-  Logger.log(
-    `Application is running on: ${
-      (await app.getUrl()).removeSlashAtEnd() + '/'
-    }${configService.get('APP_PREFIX')}`,
-    'InstanceLoader',
-  );
+  // API Base URL
+  const apiBaseUrl = `${(await app.getUrl()).removeSlashAtEnd()}/${apiPrefix}/`;
+  Logger.log(`Application is running on: ${apiBaseUrl}`, 'InstanceLoader');
 }
 
 void bootstrap();
