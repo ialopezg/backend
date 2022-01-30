@@ -21,7 +21,7 @@ import {
   initializeTransactionalContext,
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
-import { setupSwagger } from 'utils/swagger';
+import { setupSwagger } from 'utils/swagger.util';
 
 async function bootstrap(): Promise<void> {
   initializeTransactionalContext();

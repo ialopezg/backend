@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /**
  * Validate an email address.
  *
@@ -74,4 +76,10 @@ export function isMobileOrPhone(value: string /*, locale*/) {
   return Object.keys(phones).find((locale) => phones[locale].test(value))
     ? true
     : false;
+}
+
+export function isImage(mimeType: string): boolean {
+  const imageMimeTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+
+  return _.includes(imageMimeTypes, mimeType);
 }
