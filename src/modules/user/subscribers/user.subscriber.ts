@@ -23,10 +23,10 @@ export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
   }
 
   beforeUpdate({ entity, databaseEntity }: UpdateEvent<UserEntity>): void {
-    if (entity.firstName !== databaseEntity.firstName) {
+    if (entity.firstName && entity.firstName !== databaseEntity.firstName) {
       entity.firstName = UtilsService.capitalizeFirst(entity.firstName);
     }
-    if (entity.lastName !== databaseEntity.lastName) {
+    if (entity.lastName && entity.lastName !== databaseEntity.lastName) {
       entity.lastName = UtilsService.capitalizeFirst(entity.lastName);
     }
   }

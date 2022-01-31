@@ -2,7 +2,6 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -20,13 +19,11 @@ import {
 } from '@nestjs/swagger';
 import { UserRegistrationDto } from 'modules/auth/dtos';
 import {
-  EmailConfirmationGuard,
   JwtAccessTokenGuard,
-  JwtConfirmTokenGuard,
   JwtRefreshTokenGuard,
   LocalAuthenticationGuard,
 } from 'modules/auth/guards';
-import { RequestWithUserInterface } from 'modules/auth/interfaces';
+import { RequestWithUser } from 'modules/auth/interfaces';
 import { AuthService } from 'modules/auth/services';
 import { MailService } from 'modules/mail/services';
 import { UserDto } from 'modules/user/dtos';
@@ -42,7 +39,7 @@ export class AuthController {
     private readonly _mailService: MailService,
   ) {}
 
-  @Post('register')
+  @Post('signup')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Successfully Registered',
@@ -61,7 +58,7 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthenticationGuard)
-  @Post('login')
+  @Post('signin')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'An user logged in and a session cookie',
@@ -69,7 +66,7 @@ export class AuthController {
     type: UserDto,
   })
   @ApiOperation({ summary: 'Starts a new user session' })
-  async login(@Req() request: RequestWithUserInterface): Promise<UserDto> {
+  async login(@Req() request: RequestWithUser): Promise<UserDto> {
     const [accessTokenCookie, refreshTokenCookie] =
       await this._authService.login(request.user);
 
@@ -81,28 +78,11 @@ export class AuthController {
     return request.user.toDto();
   }
 
-  @UseGuards(JwtRefreshTokenGuard, EmailConfirmationGuard)
-  @Get('profile')
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Get current user profile',
-    type: UserDto,
-  })
-  @ApiOperation({ summary: 'Get current user profile' })
-  async userProfile(
-    @Req() { user }: RequestWithUserInterface,
-  ): Promise<UserDto> {
-    const userEntity = await this._userService.getUser(user.uuid);
-
-    return userEntity.toDto();
-  }
-
   @UseGuards(JwtAccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Patch('logout')
+  @Patch('signout')
   @ApiOperation({ summary: 'Delete current user session' })
-  async logout(@Req() request: RequestWithUserInterface): Promise<void> {
+  async logout(@Req() request: RequestWithUser): Promise<void> {
     await this._authService.logout(request.user);
 
     request.res.setHeader(
@@ -119,33 +99,9 @@ export class AuthController {
     type: UserDto,
   })
   @ApiOperation({ summary: 'Refresh current user access token' })
-  async refresh(@Req() request: RequestWithUserInterface): Promise<void> {
+  async refresh(@Req() request: RequestWithUser): Promise<void> {
     const accessTokenCookie = this._authService.refreshToken(request.user);
 
     request.res.setHeader('Set-Cookie', accessTokenCookie);
-  }
-
-  @UseGuards(JwtConfirmTokenGuard)
-  @Patch('confirm')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({
-    summary: 'Finish the confirmation email process for current user',
-  })
-  async confirm(@Req() { user }: RequestWithUserInterface): Promise<void> {
-    console.log(this.userProfile);
-
-    return this._authService.confirm(user);
-  }
-
-  @UseGuards(JwtAccessTokenGuard)
-  @Post('confirm/resend')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({
-    summary: 'Resend the confirmation link for current user',
-  })
-  async resendConfirmationLink(
-    @Req() { user }: RequestWithUserInterface,
-  ): Promise<void> {
-    await this._authService.resendConfirmationLink(user);
   }
 }

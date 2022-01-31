@@ -4,7 +4,7 @@ export function removeSlashAtBeginning(path: string): string {
 
 export function removeSlashAtEnd(path: string): string {
   return path.charAt(path.length - 1) === '/'
-    ? path.substr(0, path.length - 1)
+    ? path.substring(0, path.length - 1)
     : path;
 }
 

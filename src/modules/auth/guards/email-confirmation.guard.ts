@@ -4,14 +4,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { RequestWithUserInterface } from 'modules/auth/interfaces';
+import { RequestWithUser } from 'modules/auth/interfaces';
 
 @Injectable()
 export class EmailConfirmationGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request: RequestWithUserInterface = context
-      .switchToHttp()
-      .getRequest();
+    const request: RequestWithUser = context.switchToHttp().getRequest();
 
     if (!request.user?.userAuth?.isEmailConfirmed) {
       throw new UnauthorizedException('Confirm your email first');

@@ -6,10 +6,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import Joi from 'joi';
 import { contextMiddleware } from 'middlewares';
 import { DatabaseModule } from 'modules/database';
+import { AccountModule } from 'modules/account';
 import { AppService } from 'modules/app/services';
 import { AuthModule } from 'modules/auth';
 import { MailModule } from 'modules/mail';
 import { UserModule } from 'modules/user';
+import { FileModule } from 'modules/file';
 
 @Module({
   imports: [
@@ -45,6 +47,9 @@ import { UserModule } from 'modules/user';
         EMAIL_QUEUE_TYPE: Joi.string().required(),
         EMAIL_QUEUE_HOST: Joi.string().required(),
         EMAIL_QUEUE_PORT: Joi.number().required(),
+        AWS_REGION: Joi.string().required(),
+        AWS_ACCESS_KEY_ID: Joi.string().required(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().required(),
       }),
     }),
     BullModule.forRootAsync({
@@ -58,8 +63,10 @@ import { UserModule } from 'modules/user';
       }),
     }),
     DatabaseModule,
-    UserModule,
     AuthModule,
+    AccountModule,
+    UserModule,
+    FileModule,
     MailModule,
   ],
   providers: [AppService],

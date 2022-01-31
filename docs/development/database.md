@@ -12,7 +12,7 @@ Folder structure
 project
 ├── data (folder)
 │   ├── scripts (folder)
-│       ├── init.sql (File)
+│   │   ├── init.sql (File)
 ├── docker-compose.yml (File)
 ```
 

@@ -1,13 +1,15 @@
 import { Exclude } from 'class-transformer';
+import { AbstractEntity } from 'common/entities';
+import { FileEntity } from 'modules/file/entities';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { AbstractEntity } from '../../../common/entities';
 import { UserDto } from '../dtos';
 import { UserAuthEntity } from '../entities';
 
@@ -32,8 +34,13 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @Column({ unique: true, nullable: true })
   phone?: string;
 
-  @Column({ nullable: true })
-  avatar?: string;
+  @OneToOne(() => FileEntity, {
+    eager: true,
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @JoinColumn()
+  avatar?: FileEntity;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   @Exclude()
@@ -57,7 +64,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName?: string,
     motherName?: string,
     phone?: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   );
   constructor(
@@ -66,7 +73,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName?: string,
     motherName?: string,
     phone?: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   );
   constructor(
@@ -75,7 +82,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName: string,
     motherName?: string,
     phone?: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   );
   constructor(
@@ -84,7 +91,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName: string,
     motherName: string,
     phone?: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   );
   constructor(
@@ -93,7 +100,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName: string,
     motherName: string,
     phone: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   );
   constructor(
@@ -102,7 +109,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName: string,
     motherName: string,
     phone: string,
-    avatar: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   );
   constructor(
@@ -111,8 +118,8 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName: string,
     motherName: string,
     phone: string,
-    avatar: string,
-    userAuth: UserAuthEntity,
+    avatar?: FileEntity,
+    userAuth?: UserAuthEntity,
   );
   constructor(
     firstName?: string,
@@ -120,16 +127,16 @@ export class UserEntity extends AbstractEntity<UserDto> {
     lastName?: string,
     motherName?: string,
     phone?: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
-  )
+  );
   constructor(
     firstName?: string,
     middleName?: string,
     lastName?: string,
     motherName?: string,
     phone?: string,
-    avatar?: string,
+    avatar?: FileEntity,
     userAuth?: UserAuthEntity,
   ) {
     super();
@@ -139,7 +146,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
     this.lastName = lastName || '';
     this.motherName = motherName || '';
     this.phone = phone || '';
-    this.avatar = avatar || '';
+    this.avatar = avatar || undefined;
     this.userAuth = userAuth || undefined;
   }
 }

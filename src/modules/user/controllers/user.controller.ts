@@ -1,17 +1,25 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Post,
   Query,
+  Req,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginateResponse } from 'common/decorators';
 import { PageDto, PageOptionsDto } from 'common/dtos';
-import { JwtAccessTokenGuard } from 'modules/auth/guards';
+import { EmailConfirmationGuard, JwtAccessTokenGuard, JwtRefreshTokenGuard } from 'modules/auth/guards';
+import { RequestWithUser } from 'modules/auth/interfaces';
+import { FileDto } from 'modules/file/dtos';
+import { FileEntity } from 'modules/file/entities';
 import { UserDto } from '../dtos';
 import { UserService } from '../services';
 

@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { FileDto } from 'modules/file/dtos';
 
 import { AbstractDto } from '../../../common/dtos';
 import { UserAuthDto } from '../dtos';
@@ -22,7 +23,7 @@ export class UserDto extends AbstractDto {
   readonly phone?: string;
 
   @ApiPropertyOptional({ description: 'User avatar image' })
-  readonly avatar?: string;
+  readonly avatar?: FileDto;
 
   @ApiPropertyOptional({
     description: 'User session information',
@@ -40,5 +41,6 @@ export class UserDto extends AbstractDto {
     this.motherName = user?.motherName;
     this.phone = user?.phone;
     this.userAuth = user.userAuth?.toDto();
+    this.avatar = user.avatar?.toDto();
   }
 }
