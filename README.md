@@ -1,73 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+<div align="center">
+  <h1>API BOILERPLATE</h1>
+</div>
+<div align="center">
+  <strong>is a TypeScript API (Backend Server) starter repository</strong>
+</div>
+<br />
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## :book: Table of Content
+- [Overview](docs/overview.md)
+- [Development](docs/development/get-started.md)
+  - [Installation](docs/development/installation.md)
+  - [Database installation](docs/development/database.md)
+- [Modules](docs/modules)
+    - [Users](docs/modules/user.md)
+    - [Authentication & Authorization](docs/modules/auth.md)
+    - [Mail](docs/modules/mail.md)
+    - [Pagination](docs/modules/pagination.md)
+    - [Additional](docs/additionals)
+        - [Redis](docs/modules/additionals/redis.md)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Description ✨
 
-## Description
+[API Boilerplate](https://github.com/ialopezg/api-boilerplate) expose the [BOILERPLATE Platform](https://github.com/ialopezg/boilerplate) API for its Business Logic. This module is the core and supports requests and provide responses to following modules:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. [Back-office](https://github.com/ialopezg/back-office-boilerplate) App (web, desktop, modile)
+2. [Client App](https://github.com/ialopezg/client-app-boilerplate) (web, desktop, mobile)
+3. [Stores App](https://github.com/ialopezg/client-store-boilerplate) (web, desktop, mobile)
+4. [Riders or Delivery boys app](https://github.com/ialopezg/delivery-boy-boilerplate) (mobile: Android & iOS)
+5. [Frontend App](https://github.com/ialopezg/web-boilerplate) (web)
 
-## Installation
+## Support ✨
 
-```bash
-$ npm install
-```
+API Boilerplate is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://ialopezg.com/api-boilerplate).
 
-## Running the app
+## Stay in touch ✨
 
-```bash
-# development
-$ npm run start
+### Authors ✨
 
-# watch mode
-$ npm run start:dev
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/ialopezg"><img src="https://avatars.githubusercontent.com/u/6828828?s=100&v=4" width="100px;" alt="Isidro A. López G."/><br /><sub><b>Isidro A. López G.</b></sub></a><br /><a href="https://github.com/signal-owl/soiot-admin/issues?q=author%3Aialopezg" title="Bug reports">🐛</a></td>
+  </tr>
+</table>
 
-# production mode
-$ npm run start:prod
-```
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
 
-## Test
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
-```bash
-# unit tests
-$ npm run test
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
-# e2e tests
-$ npm run test:e2e
+## License ✨
 
-# test coverage
-$ npm run test:cov
-```
+Copyright © 2022-present. This source code is licensed under [MIT license](LICENSE) found in the [LICENSE](LICENSE) file.
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+BOILERPLATE - Backend Server by [IALopezG](https://ialopezg.com).

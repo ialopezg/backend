@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -9,8 +10,17 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "common/*": ["common/*"],
+      "filters/*": ["filters/*"],
+      "middlewares/*": ["middlewares/*"],
+      "migrations/*": ["migrations/*"],
+      "modules/*": ["modules/*"],
+      "providers/*": ["providers/*"],
+      "utils/*": ["utils/*"]
+    }
   }
 }
