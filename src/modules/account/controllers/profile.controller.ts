@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PaginateResponse } from 'common/decorators';
 import { Response } from 'express';
 import {
   JwtRefreshTokenGuard,
@@ -23,7 +24,7 @@ import {
 } from 'modules/auth/guards';
 import { RequestWithUser } from 'modules/auth/interfaces';
 import { AuthService } from 'modules/auth/services';
-import { FileDto } from 'modules/file/dtos';
+import { FileDto, FilesPageDto } from 'modules/file/dtos';
 import { UserDto } from 'modules/user/dtos';
 import { UserService } from 'modules/user/services';
 
@@ -33,7 +34,7 @@ export class ProfileController {
   constructor(
     private readonly _authService: AuthService,
     private readonly _userService: UserService,
-  ) {}
+  ) { }
 
   @UseGuards(JwtConfirmTokenGuard)
   @Patch('confirm')
@@ -55,6 +56,20 @@ export class ProfileController {
     @Req() { user }: RequestWithUser,
   ): Promise<void> {
     await this._authService.resendConfirmationLink(user);
+  }
+
+  @UseGuards(JwtAccessTokenGuard)
+  @Get('files')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Gets user files',
+    type: FileDto,
+  })
+  @PaginateResponse(FileDto)
+  @ApiOperation({ summary: 'Get user files' })
+  async getUserFiles(@Req() { user: { uuid } }: RequestWithUser): Promise<FilesPageDto> {
+    return this._userService.getUserFiles(uuid);
   }
 
   @UseGuards(JwtRefreshTokenGuard, EmailConfirmationGuard)
@@ -101,7 +116,7 @@ export class ProfileController {
     @Req() request: RequestWithUser,
     @Res() response: Response,
   ): Promise<any> {
-    if (request.user.avatar.isPublic) {
+    if (request.user.avatar?.isPublic) {
       return request.user.toDto().avatar;
     }
 

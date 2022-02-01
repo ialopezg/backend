@@ -1,3 +1,4 @@
+export * from './file.util';
 export * from './generator.util';
 export * from './hash.util';
 export * from './path.util';

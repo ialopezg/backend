@@ -144,9 +144,9 @@ $ ifconfig |grep inet
 then type next, in each field
 
 ```
-Database: root
-Username: root
-Password: root
+Database: postgres
+Username: postgres
+Password: postgres
 ```
 
 4. Then click on to Save Button

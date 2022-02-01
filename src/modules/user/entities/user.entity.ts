@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   UpdateDateColumn,
 } from 'typeorm';
@@ -55,6 +56,9 @@ export class UserEntity extends AbstractEntity<UserDto> {
     onDelete: 'CASCADE',
   })
   public userAuth: UserAuthEntity;
+
+  @OneToMany(() => FileEntity, (file: FileEntity) => file.owner)
+  public files: FileEntity[];
 
   dtoClass = UserDto;
 

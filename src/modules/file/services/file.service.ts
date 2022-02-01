@@ -1,12 +1,18 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
+import { PageMetaDto } from 'common/dtos';
+import { info } from 'console';
 import mime from 'mime-types';
+import { UserEntity } from 'modules/user/entities';
 import { DeleteResult } from 'typeorm';
-import { generateFilename } from 'utils';
+import { generateFilename, getFileExtension, getFilenameWithoutExtension } from 'utils';
+
+import { FilesPageDto, FilesPageOptionsDto } from '../dtos';
+import { FileCreateDto } from '../dtos/file-create.dto';
 import { FileEntity } from '../entities';
 import { FileNotFoundException } from '../exceptions';
-import { FileRepository } from '../repositories/file.repository';
+import { FileRepository } from '../repositories';
 
 @Injectable()
 export class FileService {
@@ -34,12 +40,56 @@ export class FileService {
     this._s3 = new AWS.S3(options);
   }
 
+  public async getFileStream(uuid: string) {
+    const file = await this.findFile(uuid);
+    if (file) {
+      const stream = this._s3
+        .getObject({
+          Bucket: this._configService.get('AWS_BUCKET_NAME'),
+          Key: file.key,
+        })
+        .createReadStream();
+
+      return {
+        stream,
+        info: file,
+      };
+    }
+
+    throw new FileNotFoundException();
+  }
+
+  public async getFile(uuid: string): Promise<FileEntity> {
+    const file = await this.findFile(uuid);
+    if (file) {
+      return file;
+    }
+
+    throw new FileNotFoundException('File not found');
+  }
+
+  public async getFiles(options: FilesPageOptionsDto, user: UserEntity = null): Promise<FilesPageDto> {
+    const queryBuilder = this._fileRepository.createQueryBuilder('files');
+
+    queryBuilder.leftJoinAndSelect('files.owner', 'user');
+    if (user) {
+      queryBuilder.where('user.id = :owner', { owner: user.id });
+    }
+    const [files, itemCount] = await queryBuilder
+      .skip(options.skip)
+      .take(options.take)
+      .getManyAndCount();
+
+    return new FilesPageDto(files.toDtos(), new PageMetaDto({ options, itemCount }));
+  }
+
   public async uploadFile(
     file: Express.Multer.File,
-    path = '',
+    fileCreateDto: FileCreateDto,
+    user: UserEntity,
   ): Promise<FileEntity> {
     const filename = generateFilename(<string>mime.extension(file.mimetype));
-    const key = `${path.length ? path + '/' : ''}${filename}`;
+    const key = `${fileCreateDto.path.length ? fileCreateDto.path + '/' : ''}${filename}`;
 
     const result = await this._s3
       .putObject({
@@ -49,11 +99,14 @@ export class FileService {
         Key: key,
       })
       .promise();
-    console.log(result);
+
     if (result) {
       const newFile = this._fileRepository.create({
+        title: fileCreateDto.title ?? getFilenameWithoutExtension(file.originalname),
         key,
         url: `${this._configService.get('AWS_PUBLIC_URL')}/${key}`,
+        isPublic: fileCreateDto.isPublic,
+        owner: user,
       });
       await this._fileRepository.save(newFile);
 
@@ -78,25 +131,6 @@ export class FileService {
     throw new FileNotFoundException();
   }
 
-  public async getFile(uuid: string) {
-    const file = await this.findFile(uuid);
-    if (file) {
-      const stream = this._s3
-        .getObject({
-          Bucket: this._configService.get('AWS_BUCKET_NAME'),
-          Key: file.key,
-        })
-        .createReadStream();
-
-      return {
-        stream,
-        info: file,
-      };
-    }
-
-    throw new FileNotFoundException();
-  }
-
   public async deleteFile(uuid: string): Promise<DeleteResult> {
     const file = await this.findFile(uuid);
     if (file) {
@@ -109,5 +143,7 @@ export class FileService {
 
       return this._fileRepository.delete(file.id);
     }
+
+    throw new NotFoundException('File not found');
   }
 }
