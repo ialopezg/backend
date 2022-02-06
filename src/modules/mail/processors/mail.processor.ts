@@ -52,11 +52,12 @@ export class MailProcessor {
       return this._mailerService.sendMail({
         to: job.data.user.userAuth.email,
         from: this._configService.get('EMAIL_FROM'),
-        subject: 'User registration',
+        subject: `RFCSAPI - CUENTA ACTIVADA :: ${job.data.user.firstName} ${job.data.user.lastName}`,
         template: './registration',
         context: {
           confirmUrl: job.data.confirmUrl,
-          recipientName: job.data.user.firstName,
+          recipientName: `${job.data.user.firstName} ${job.data.user.lastName}`,
+          customerId: job.data.user.userAuth.pinCode,
           apiTitle: this._configService.get('APP_SITE_TITLE'),
           apiLogoUrl: this._configService.get('APP_SITE_LOGO_URL'),
           senderName: this._configService.get('APP_SITE_TITLE'),

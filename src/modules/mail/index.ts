@@ -6,7 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from 'modules/auth';
 import { MAIL_QUEUE } from 'modules/mail/constants';
 import { MailProcessor } from 'modules/mail/processors';
-import { MailService } from 'modules/mail/services';
+
+import { MailService } from './services';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -24,7 +26,6 @@ import { MailService } from 'modules/mail/services';
             user: configService.get('EMAIL_ADDRESS'),
             pass: configService.get('EMAIL_PASSWORD'),
           },
-          tls: { rejectUnauthorized: false },
         },
         defaults: { from: configService.get('EMAIL_FROM') },
         template: {
@@ -38,7 +39,10 @@ import { MailService } from 'modules/mail/services';
       name: MAIL_QUEUE,
     }),
   ],
-  providers: [MailProcessor, MailService],
+  providers: [MailProcessor, MailService, {
+    provide: 'MAIL_SERVICE',
+    useFactory: () => ClientProxyFactory.create({ transport: Transport.TCP }),
+  },],
   exports: [MailService],
 })
 export class MailModule {}

@@ -22,6 +22,7 @@ import {
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
 import { setupSwagger } from 'utils/swagger.util';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap(): Promise<void> {
   initializeTransactionalContext();
@@ -49,6 +50,15 @@ async function bootstrap(): Promise<void> {
 
   const configService = app.get(ConfigService);
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      port: +configService.get<number>('TRANSPORT_PORT'),
+    },
+  });
+
+  app.startAllMicroservices();
+  
   // Base URL
   const apiPrefix =
     configService.get('NODE_ENV') === 'development'

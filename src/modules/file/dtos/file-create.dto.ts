@@ -5,15 +5,15 @@ export class FileCreateDto {
   @ApiPropertyOptional({ description: 'User file title' })
   @IsString()
   @IsOptional()
-  readonly title: string;
+  readonly title?: string;
 
   @ApiPropertyOptional({ description: 'User file path' })
   @IsString()
   @IsOptional()
-  readonly path: string;
+  readonly path?: string;
 
   @ApiPropertyOptional({ description: 'Whether avatar has public visibility', default: false })
   @IsBoolean()
   @IsOptional()
-  readonly isPublic: boolean;
+  readonly isPublic?: boolean;
 }

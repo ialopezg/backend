@@ -1,13 +1,14 @@
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from 'common/entities';
 import { UserEntity } from 'modules/user/entities';
-import { Column, Entity, ManyToOne, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, UpdateDateColumn } from 'typeorm';
 
 import { FileDto } from '../dtos';
 
 @Entity({ name: 'user_files' })
 export class FileEntity extends AbstractEntity<FileDto> {
   @Column()
+  @Index('file_title_index')
   public title: string;
   
   @Column({ unique: true })

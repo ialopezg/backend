@@ -7,13 +7,20 @@ import {
 import { bool } from 'aws-sdk/clients/signer';
 import { PageDto, PageMetaDto, PageOptionsDto } from 'common/dtos';
 import { FilesPageOptionsDto } from 'modules/file/dtos';
+import { FileCreateDto } from 'modules/file/dtos/file-create.dto';
 import { FilesPageDto } from 'modules/file/dtos/files-page.dto';
 import { FileEntity } from 'modules/file/entities';
 import { FileNotImageException } from 'modules/file/exceptions';
 import { FileService } from 'modules/file/services';
 import { UpdateResult } from 'typeorm';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
-import { isEmail, isImage, isNumeric, isUUID } from 'utils';
+import {
+  getFilenameWithoutExtension,
+  isEmail,
+  isImage,
+  isNumeric,
+  isUUID,
+} from 'utils';
 
 import { UserCreateDto, UserDto } from '../dtos';
 import { UserEntity } from '../entities';
@@ -27,7 +34,7 @@ export class UserService {
     private readonly _userRepository: UserRepository,
     private readonly _userAuthService: UserAuthService,
     private readonly _fileService: FileService,
-  ) { }
+  ) {}
 
   @Transactional()
   public async createUser(userCreateDto: UserCreateDto): Promise<UserEntity> {
@@ -100,7 +107,14 @@ export class UserService {
     }
 
     if (file) {
-      avatar = await this._fileService.uploadFile(file, 'users/avatars', user);
+      avatar = await this._fileService.uploadFile(
+        file,
+        {
+          title: getFilenameWithoutExtension(file.originalname),
+          path: 'users/avatars',
+        },
+        user,
+      );
     }
 
     this._userRepository.update(user.id, { avatar });
@@ -146,9 +160,7 @@ export class UserService {
       );
     }
 
-    throw new NotFoundException(
-      'Current user has not avatar image attached.',
-    );
+    throw new NotFoundException('Current user has not avatar image attached.');
   }
 
   public async getUserFiles(uuid: string): Promise<FilesPageDto> {

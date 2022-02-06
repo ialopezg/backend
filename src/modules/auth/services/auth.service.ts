@@ -112,7 +112,7 @@ export class AuthService {
   }
 
   public async resendConfirmationLink(user: UserEntity): Promise<void> {
-    if (user.userAuth.isEmailConfirmed) {
+    if (user?.userAuth.isEmailConfirmed) {
       throw new BadRequestException('Email already confirmed');
     }
 
@@ -120,7 +120,7 @@ export class AuthService {
   }
 
   public async confirm(user: UserEntity): Promise<void> {
-    await this._userAuthService.markEmailAsConfirmed(user.userAuth.email);
+    await this._userAuthService.markEmailAsConfirmed(user?.userAuth.email);
   }
 
   private _getCookieWithJwtToken(uuid: string): string {
