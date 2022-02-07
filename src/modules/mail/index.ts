@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from 'modules/auth';
 import { MAIL_QUEUE } from 'modules/mail/constants';
 import { MailProcessor } from 'modules/mail/processors';
+import { resolve } from 'path';
 
 import { MailService } from './services';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
@@ -29,7 +30,7 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
         },
         defaults: { from: configService.get('EMAIL_FROM') },
         template: {
-          dir: __dirname + '/templates',
+          dir: resolve(__dirname, '..', 'templates'),
           adapter: new HandlebarsAdapter(),
           options: { strict: true },
         },
@@ -39,7 +40,7 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
       name: MAIL_QUEUE,
     }),
   ],
-  providers: [MailProcessor, MailService, {
+  providers: [MailService, {
     provide: 'MAIL_SERVICE',
     useFactory: () => ClientProxyFactory.create({ transport: Transport.TCP }),
   },],

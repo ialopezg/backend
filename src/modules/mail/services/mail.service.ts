@@ -29,11 +29,28 @@ export class MailService {
         { cmd: 'send-message' },
         {
           from: this._configService.get('EMAIL_FROM'),
-          subject: `${this._configService.get('EMAIL_DEFAULT_SUBJECT')} ${user.firstName} ${user.lastName}`,
+          subject: `${this._configService.get('EMAIL_DEFAULT_SUBJECT')} ${
+            user.firstName
+          } ${user.lastName}`,
           emailAddress: user.userAuth.email,
-          confirmUrl,
           context: {
-            siteTitle: this._configService.get('APP_SITE_TITLE'),
+            confirmUrl,
+            recipientName: `${user.firstName} ${user.lastName}`,
+            customerId: user.userAuth.pinCode,
+            apiTitle: this._configService.get('APP_SITE_TITLE'),
+            apiLogoUrl: this._configService.get('APP_SITE_LOGO_URL'),
+            senderName: this._configService.get('APP_SITE_TITLE'),
+            senderAddress: this._configService.get('APP_CONTACT_ADDRESS'),
+            senderCity: this._configService.get('APP_CONTACT_CITY'),
+            senderState: this._configService.get('APP_CONTACT_STATE_ABBR'),
+            senderPostalCode: this._configService.get(
+              'APP_CONTACT_POSTAL_CODE',
+            ),
+            contactUrl: this._configService.get('APP_CONTACT_URL'),
+            unsubscribeUrl: this._configService.get('APP_UNSUBSCRIBE_URL'),
+            unsubscribePreferencesUrl: this._configService.get(
+              'APP_UNSUBSCRIBE_PREFERENCES_URL',
+            ),
           },
         },
       );
