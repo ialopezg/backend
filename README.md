@@ -26,11 +26,10 @@
 
 ### Programming Languages
 ![JavaScript](https://img.shields.io/badge/-JavaScript-000000?style=flat&logo=javascript)
-![TypeScript](https://img.shields.io/badge/-JavaScript-black?style=plastic&logo=typescript)
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-000000?style=flat&logo=postgresql)
+![TypeScript](https://img.shields.io/badge/-JavaScript-black?style=flat&logo=typescript)
 
 ### Database
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=plastic&logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-black?style=flat&logo=postgresql)
 
 ## ✨ Description
 
