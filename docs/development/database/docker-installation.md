@@ -1,6 +1,6 @@
 ## Docker Compose with Postgres Database
 
-In this article, We will explain to you how to set up Postgresql following multiple databases using Docker-Compose
+In this article, we will learn how to set up Postgresql following multiple databases using Docker-Compose
 
 ### Let’s Start Creating Multiple Environment Database
 
@@ -21,6 +21,7 @@ project
 ```bash
 touch docker-compose.yml
 ```
+
 Copy and paste the following code to `docker-compose.yml` file recently created.
 
 ```yaml

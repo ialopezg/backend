@@ -1,6 +1,12 @@
+## :book: Table of Content
+ - [Description](#description)
+ - [Features](#features)
+  
+
 ## Description
 
 [API Boilerplate](https://github.com/ialopezg/api-boilerplate) is a basic skeleton with class abstraction, global & local validation, global & local exception handlers, logging &data tracking, data transfer objects, execution context, authentication, users & user roles, migrations, and default dispatchers built with [NestJS](https://nestjs.com/).
+
 ### Features
 
 - **`Data Transfer Object (DTO)`** polyfill transformation functionality.
@@ -13,3 +19,7 @@
 - **`Data Persistence & Object Relational Mapping`**, comprising all disciplines related to managing data as a valuable resource based on the concept of "objects". When this storage and retrieval functionality is implemented, the objects are said to be persistent.
 - **`Data Analysis`**, transactional operations let data hygiene and integrity is maintained by the database feature of only logging completed transactions. The system cancels a transaction that did not check all the proper completion boxes. This inbuilt screening mechanism ensures that the data recorded is either a successful transaction or a failure. This feature is not without its challenges; notably, it is sometimes difficult to scale up.
 - **`API Documentation`**, is the technical content deliverable, containing instructions about how to effectively use and integrate with an API. It’s a concise reference manual containing all the information required to work with the API, with details about the functions, classes, return types, arguments and more, supported by tutorials and examples. API Documentation has traditionally been done using regular content creation and maintenance tools and text editors.
+
+---
+
+BOILERPLATE - Backend Server by [IALopezG](https://ialopezg.com).
