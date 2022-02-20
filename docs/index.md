@@ -7,17 +7,17 @@
 <br />
 
 ## :book: Table of Content
- - [Overview](docs/overview.md)
- - [Development](docs/development/index.md)
-   - [Installation](docs/development/installation.md)
-   - [Database installation](docs/development/database.md)
- - [Modules](docs/modules)
-     - [Users](docs/modules/user.md)
-     - [Authentication & Authorization](docs/modules/auth.md)
-     - [Mail](docs/modules/mail.md)
-     - [Pagination](docs/modules/pagination.md)
-     - [Additional](docs/additionals)
-         - [Redis](docs/modules/additionals/redis.md)
+ - [Overview](overview.md)
+ - [Development](development/index.md)
+   - [Installation](development/installation.md)
+   - [Database installation](development/database.md)
+ - [Modules](modules)
+     - [Users](modules/user.md)
+     - [Authentication & Authorization](modules/auth.md)
+     - [Mail](modules/mail.md)
+     - [Pagination](modules/pagination.md)
+     - [Additional](additionals)
+         - [Redis](modules/additionals/redis.md)
 
 ---
 BOILERPLATE - Backend Server by [IALopezG](https://ialopezg.com).
