@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  db:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    environment:
+      MONGO_INITDB_DATABASE: ${DB_NAME:-database}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USER:-user}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-password}
+    ports:
+      - ${DB_LISTEN_PORT_OUT:-27017}:${DB_PORT:-27017}
+    volumes:
+      - ${DB_VOLUME_PATH:-./data/mongodb}:/data/db
+      - ${DB_VOLUME_INIT_SCRIPTS:-./data/scripts}:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+      - frontend
+
+  dbclient:
+    image: mongo-express
+    container_name: mongodb-client
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: ${DB_PORT:-27017}
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "false"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: ${DB_NAME:-database}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_ROOT_USER:-user}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_ROOT_PASSWORD:-password}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGOEXPRESS_LOGIN:-dev}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGOEXPRESS_PASSWORD:-dev}
+    volumes:
+      - ${DB_VOLUME_PATH:-./data/mongodb}:/data/db
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - frontend
+    ports:
+      - 8081:8081
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    name: infrastructure

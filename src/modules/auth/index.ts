@@ -1,45 +1,11 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { AuthController } from 'modules/auth/controllers';
-import { AuthService } from 'modules/auth/services';
-import {
-  JwtAccessTokenStrategy,
-  JwtConfirmTokenStrategy,
-  JwtRefreshTokenStrategy,
-  LocalStrategy,
-} from 'modules/auth/strategies';
-import { MailModule } from 'modules/mail';
-import { UserModule } from 'modules/user';
+import { Module } from '@ialopezg/corejs';
+
+import { SharedModule } from '../shared';
+import { UserModule } from '../user';
+import { AuthController } from './controllers';
 
 @Module({
-  imports: [
-    UserModule,
-    PassportModule,
-    ConfigModule,
-    forwardRef(() => MailModule),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
-        signOptions: {
-          expiresIn: `${configService.get(
-            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-          )}s`,
-        },
-      }),
-    }),
-  ],
+  modules: [SharedModule, UserModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtAccessTokenStrategy,
-    JwtRefreshTokenStrategy,
-    JwtConfirmTokenStrategy,
-  ],
-  exports: [AuthService],
 })
 export class AuthModule {}
