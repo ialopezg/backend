@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    ports:
+      - "${DB_LISTEN_PORT_OUT}:5432"
+    volumes:
+      - ${DB_VOLUME_PATH}:/var/lib/postgresql/data
+      - ./data/scripts/potgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_ROOT_USER}
+      POSTGRES_PASSWORD: ${DB_ROOT_PASSWORD}
+      POSTGRES_DB_NAME: ${APP_DB_NAME}
+      APP_DB_USER: ${APP_DB_USER}
+      APP_DB_PASS: ${APP_DB_PASSWORD}
+    networks:
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin
+    links:
+      - postgres:postgres
+    image: dpage/pgadmin4
+    ports:
+      - 8080:80
+    volumes:
+      - ${PGADMIN_VOLUME_PATH}:/root/.pgadmin
+    env_file:
+      - .env
+    restart: always
+    networks:
+      - postgres
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    name: infrastructure
+

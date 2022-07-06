@@ -1,175 +1,179 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { bool } from 'aws-sdk/clients/signer';
-import { PageDto, PageMetaDto, PageOptionsDto } from 'common/dtos';
-import { FilesPageOptionsDto } from 'modules/file/dtos';
-import { FileCreateDto } from 'modules/file/dtos/file-create.dto';
-import { FilesPageDto } from 'modules/file/dtos/files-page.dto';
-import { FileEntity } from 'modules/file/entities';
-import { FileNotImageException } from 'modules/file/exceptions';
-import { FileService } from 'modules/file/services';
-import { UpdateResult } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
-import {
-  getFilenameWithoutExtension,
-  isEmail,
-  isImage,
-  isNumeric,
-  isUUID,
-} from 'utils';
+import { Component, isEmpty } from '@ialopezg/corejs';
+import * as Joi from 'joi';
 
-import { UserCreateDto, UserDto } from '../dtos';
-import { UserEntity } from '../entities';
-import { UserNotFoundException } from '../exceptions';
-import { UserRepository } from '../repositories';
-import { UserAuthService } from '../services';
+import { User } from '../../../models';
+import { MailService } from '../../mailer/services';
 
-@Injectable()
+@Component()
 export class UserService {
-  constructor(
-    private readonly _userRepository: UserRepository,
-    private readonly _userAuthService: UserAuthService,
-    private readonly _fileService: FileService,
-  ) {}
-
-  @Transactional()
-  public async createUser(userCreateDto: UserCreateDto): Promise<UserEntity> {
-    const user = this._userRepository.create(userCreateDto);
-    await this._userRepository.save(user);
-
-    const createdUser = { ...userCreateDto, user };
-
-    await Promise.all([this._userAuthService.createUserAuth(createdUser)]);
-
-    return this.findUser({ uuid: user.uuid });
-  }
-
-  public async findUser(
-    options: Partial<{ uuid: string; email: string; pinCode: number }>,
-  ): Promise<UserEntity | undefined> {
-    const queryBuilder = this._userRepository.createQueryBuilder('user');
-    queryBuilder.leftJoinAndSelect('user.userAuth', 'userAuth');
-    queryBuilder.leftJoinAndSelect('user.avatar', 'userFiles');
-
-    if (options.uuid && isUUID(options.uuid)) {
-      queryBuilder.where('user.uuid = :uuid', { uuid: options.uuid });
-
-      return queryBuilder.getOne();
+  async createUser(userCreate: any): Promise<any> {
+    const errors = this.validateRequest(
+      {
+        name: Joi.string().required(),
+        lastname: Joi.string(),
+        email: Joi.string().email().required(),
+        username: Joi.string().min(4).required(),
+        password: Joi.string().required().min(6),
+      },
+      userCreate,
+      { abortEarly: false },
+    );
+    if (!isEmpty(errors)) {
+      return { errors, user: null };
     }
 
-    if (options.pinCode && isNumeric(options.pinCode)) {
-      queryBuilder.orWhere('userAuth.pinCode = :pinCode', {
-        pinCode: options.pinCode,
-      });
+    const user = await User.create(userCreate);
 
-      return queryBuilder.getOne();
-    }
-
-    if (options.email && isEmail(options.email)) {
-      queryBuilder.orWhere('userAuth.email = :email', { email: options.email });
-
-      return queryBuilder.getOne();
-    }
-
-    throw new UserNotFoundException();
+    return { errors: null, user };
   }
 
-  public async getUser(uuid: string): Promise<UserEntity | undefined> {
-    return this.findUser({ uuid });
-  }
-
-  public async getUsers(options: PageOptionsDto): Promise<PageDto<UserDto>> {
-    const queryBuilder = this._userRepository.createQueryBuilder('user');
-
-    const [users, itemCount] = await queryBuilder
-      .orderBy('user.createdAt', options.order)
-      .skip(options.skip)
-      .take(options.take)
-      .getManyAndCount();
-
-    return new PageDto(users.toDtos(), new PageMetaDto({ options, itemCount }));
-  }
-
-  @Transactional()
-  public async addAvatar(
-    user: UserEntity,
-    file: Express.Multer.File,
-  ): Promise<UserEntity> {
-    let avatar: FileEntity;
-    if (file && !isImage(file.mimetype)) {
-      throw new FileNotImageException(
-        `File '${file.originalname}' is not an image.`,
-      );
-    }
-
-    if (file) {
-      avatar = await this._fileService.uploadFile(
-        file,
-        {
-          title: getFilenameWithoutExtension(file.originalname),
-          path: 'users/avatars',
-        },
-        user,
-      );
-    }
-
-    this._userRepository.update(user.id, { avatar });
-
-    return this.findUser({ uuid: user.uuid });
-  }
-
-  public async getAvatar(user: UserEntity) {
-    if (user.avatar) {
-      return this._fileService.getFileStream(user.avatar?.uuid);
-    }
-
-    throw new NotFoundException('User avatar not found.');
-  }
-
-  @Transactional()
-  public async deleteAvatar(
-    user: UserEntity,
-    deleteFile: bool = false,
-  ): Promise<UpdateResult> {
-    if (user.avatar) {
-      const result = await this._userRepository.update(user.id, {
-        avatar: null,
-      });
-
-      if (result && deleteFile) {
-        const deletionResult = await this._fileService.deleteFile(
-          user.avatar?.uuid,
-        );
-        if (deletionResult) {
-          return result;
+  async getUser(
+    options: Partial<{
+      uuid: number | string;
+      username: string;
+      email: string;
+    }>,
+    coincidence = true,
+    exact = true,
+  ): Promise<any> {
+    if (options.username || options.email) {
+      let filter: any;
+      if (coincidence) {
+        filter = {
+          $or: [
+            {
+              username: exact
+                ? options.username
+                : new RegExp(`^${options.username}$`, 'i'),
+            },
+            {
+              email: exact
+                ? options.email
+                : new RegExp(`^${options.email}$`, 'i'),
+            },
+          ],
+        };
+      } else {
+        if (options.username) {
+          filter = {
+            username: exact
+              ? options.username
+              : new RegExp(`^${options.username}$`, 'i'),
+          };
         }
-
-        throw new InternalServerErrorException(
-          'An error has been occured while trying to delete user avatar file. Current user has no avatar attached.',
-        );
-      } else if (result && !deleteFile) {
-        return result;
+        if (options.email) {
+          filter = {
+            email: exact
+              ? options.email
+              : new RegExp(`^${options.email}$`, 'i'),
+          };
+        }
       }
 
-      throw new InternalServerErrorException(
-        'An error has been occured while trying to delete user avatar. No actions were executed.',
-      );
+      return new Promise((resolve, reject) => {
+        User.findOne(filter, (error: any, user: any) => {
+          if (error) {
+            console.log(error);
+            throw new Error(error.toString());
+          }
+
+          resolve(user || false);
+        });
+      });
     }
 
-    throw new NotFoundException('Current user has not avatar image attached.');
+    if (options.uuid) {
+      new Promise((resolve) => {
+        User.findById(options.uuid, (error: any, user: any) => {
+          if (error) {
+            console.log(error);
+            throw new Error(error.toString());
+          }
+
+          resolve(user || false);
+        });
+      });
+    }
+
+    return null;
   }
 
-  public async getUserFiles(uuid: string): Promise<FilesPageDto> {
-    const user = await this.findUser({ uuid });
+  async getUsers(): Promise<any[]> {
+    return new Promise((resolve) => {
+      User.find((error: any, users: any[]) => {
+        if (error) {
+          console.log(error);
+          throw new Error(error.toString());
+        }
 
-    if (user) {
-      return this._fileService.getFiles(new FilesPageOptionsDto(), user);
+        resolve(users || []);
+      });
+    });
+  }
+
+  async getUserById(id: number | string): Promise<any> {
+    return this.getUser({ uuid: id });
+  }
+
+  async getUserByUsername(username: string): Promise<any> {
+    return this.getUser({ username });
+  }
+
+  async getUserByEmail(email: string): Promise<any> {
+    return this.getUser({ email });
+  }
+
+  async updateUser(uuid: number | string, userUpdate: any): Promise<any> {
+    return new Promise((resolve) => {
+      User.findByIdAndUpdate(uuid, userUpdate, (error: any, user: any) => {
+        if (error) {
+          console.log(error);
+          throw new Error(error.toString());
+        }
+
+        resolve(user);
+      });
+    });
+  }
+
+  async deleteUser(uuid: number | string): Promise<any> {
+    return new Promise((resolve) => {
+      User.findByIdAndRemove(uuid, (error: any, user: any) => {
+        if (error) {
+          console.log(error);
+          throw new Error(error.toString());
+        }
+
+        resolve(user);
+      });
+    });
+  }
+
+  async userExists(options: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      User.exists(options, function (error: any, user: any) {
+        if (error) {
+          reject(false);
+        }
+
+        resolve(user || false);
+      });
+    });
+  }
+
+  private validateRequest(
+    rules: { [key: string]: any },
+    data: any,
+    options = {},
+  ): any[] {
+    const schema = Joi.object(rules);
+    const { error } = schema.validate(data, options);
+    if (error) {
+      return (<any>error).details.map((e: any) => {
+        return { [e.context.key]: e.message };
+      });
     }
 
-    throw new UserNotFoundException();
+    return [];
   }
 }

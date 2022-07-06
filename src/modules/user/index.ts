@@ -1,18 +1,16 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserAuthRepository, UserRepository } from 'modules/user/repositories';
-import { UserAuthService, UserService } from 'modules/user/services';
-import { FileModule } from 'modules/file';
+import { Module } from '@ialopezg/corejs';
 
+import { SharedModule } from '../shared';
 import { UserController } from './controllers';
+import {
+  ChatGatewayService,
+  NotificationService,
+  UserService,
+} from './services';
 
 @Module({
-  imports: [
-    FileModule,
-    TypeOrmModule.forFeature([UserRepository, UserAuthRepository]),
-  ],
+  modules: [SharedModule],
   controllers: [UserController],
-  providers: [UserService, UserAuthService],
-  exports: [UserService, UserAuthService],
+  components: [ChatGatewayService, UserService, NotificationService],
 })
 export class UserModule {}
