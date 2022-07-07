@@ -1,42 +1,42 @@
 import { capitalizeFirst, HttpException, HttpStatus } from '@ialopezg/corejs';
 
-export const errorHandler = (error: any): any => {
-  console.log('isMongoError', error.name === 'MongoServerError');
-  console.log('isHttpException', error instanceof HttpException);
+import { Response } from '../common/interfaces';
+
+export const errorHandler = (error: any): Response => {
   if (error.name === 'MongoServerError') {
     const message = 'Validation failed';
     const status = HttpStatus.BAD_REQUEST;
 
     if (error && (error.code === 11000 || error.code === 11001)) {
-      const key = Object.keys(error.keyValue).join('');
+      const key = Object.keys(error.keyValue).shift();
       const value = error.keyValue[key];
 
       return {
         status: HttpStatus.CONFLICT,
         message,
-        details: [
-          { key: `${capitalizeFirst(key)} '${value}' is already taken!` },
-        ],
+        error: {
+          [key]: `${capitalizeFirst(key)} "${value}" is already taken!`,
+        },
       };
     }
 
-    const errors = Object.keys(error.errors).map((key) => {
+    const errors = null;
+    Object.keys(error.errors).map((key) => {
       errors[key] = error.errors[key].message;
     });
 
-    return { status, message, details: errors };
+    return { status, message, error: errors };
   } else if (error instanceof HttpException) {
     return {
       status: error.getStatus(),
       message: error.getMessage(),
-      details: [],
     };
   } else {
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Internal Error Server',
-      details: {
-        type: 'Unknown',
+      error: {
+        type: 'Unknown error',
         message: error.message,
       },
     };
