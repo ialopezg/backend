@@ -1,16 +1,18 @@
 import { Application as App } from '@ialopezg/corejs';
 import * as express from 'express';
 
-import { ExpressConfig } from './config';
+import { ExpressConfig, PassportJwtConfig } from './config';
 
 export class Application implements App {
   constructor(private readonly app: express.Application) {
     ExpressConfig.setup(this.app);
+    PassportJwtConfig.setup(this.app);
   }
 
   start(): void {
-    this.app.listen(3000, () => {
-      console.log('Application listen on port: ', 3000);
+    const port = process.env.APP_PORT || 5000;
+    this.app.listen(port, () => {
+      console.log('Application listen on port', port);
     });
 
     let route: any;
