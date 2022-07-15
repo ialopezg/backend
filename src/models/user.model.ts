@@ -39,6 +39,5 @@ UserSchema.pre('save', async function (next: any) {
 });
 
 const User = db.model<UserType>('User', UserSchema);
-User.createIndexes();
 
 export { User };
