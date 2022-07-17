@@ -3,6 +3,7 @@ import { isEmail } from 'class-validator';
 import * as mongoose from 'mongoose';
 
 import { db } from '../../../models/db';
+import { UserDto } from '../dtos';
 
 interface UserInterface extends mongoose.Document {
   name: string;
@@ -41,16 +42,16 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       index: true,
-      validator: [isEmail, 'Please, fill a valid email address!'],
+      validator: [ isEmail, 'Please, fill a valid email address!' ],
     },
     username: { type: String, unique: true, index: true },
     password: { type: String, required: true },
     avatar: { type: String },
-    role: { type: String, enum: ['USER', 'ADMIN', 'SU'], default: 'USER' },
+    role: { type: String, enum: [ 'USER', 'ADMIN', 'SU' ], default: 'USER' },
     verifiedAt: { type: Date },
     status: {
       type: String,
-      enum: ['Active', 'Inactive', 'Banned'],
+      enum: [ 'Active', 'Inactive', 'Banned' ],
       default: 'Inactive',
     },
   },
@@ -80,22 +81,38 @@ UserSchema.pre('save', async function (next: any) {
   next();
 });
 
+UserSchema.methods.toDto = function (): UserDto {
+  return {
+    uuid: this.id,
+    name: this.name,
+    lastname: this.lastname,
+    phone: this.phone,
+    mobile: this.mobile,
+    username: this.email,
+    email: this.email,
+    avatar: this.avatar,
+    role: this.role,
+    status: this.status,
+    verifiedAt: this.verifiedAt,
+  };
+};
+
 const User = db.model<UserType>('User', UserSchema);
 
 const parseUser = (user: any): any => {
   return user
     ? {
-        uuid: user.id,
-        name: user.name,
-        lastname: user.lastname,
-        phone: user.phone,
-        mobile: user.mobile,
-        username: user.email,
-        email: user.email,
-        avatar: user.avatar,
-        role: user.role,
-        status: user.status,
-      }
+      uuid: user.id,
+      name: user.name,
+      lastname: user.lastname,
+      phone: user.phone,
+      mobile: user.mobile,
+      username: user.email,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      status: user.status,
+    }
     : null;
 };
 

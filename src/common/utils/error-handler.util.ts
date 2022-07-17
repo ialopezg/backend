@@ -20,7 +20,7 @@ export const errorHandler = (error: any): Response => {
       return {
         status: HttpStatus.CONFLICT,
         message: 'Validation Conflict',
-        details: {
+        error: {
           [key]: `${capitalizeFirst(key)} '${value}' is already taken!`,
         },
       };
@@ -34,7 +34,7 @@ export const errorHandler = (error: any): Response => {
     return {
       status: HttpStatus.BAD_REQUEST,
       message: 'Validation Error - Other',
-      details: errors,
+      error: errors,
     };
   }
 
@@ -49,14 +49,14 @@ export const errorHandler = (error: any): Response => {
     return {
       message: error.getMessage(),
       status: error.getStatus(),
-      details: error.details,
+      error: error.details,
     };
   }
 
   return {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     message: 'Internal Error Server',
-    details: {
+    error: {
       type: 'Unknown',
       message: error.message,
     },

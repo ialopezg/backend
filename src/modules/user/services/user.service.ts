@@ -15,8 +15,7 @@ export class UserService {
     private readonly preferences: PreferenceService,
     private readonly tokenService: TokenService,
     private readonly mailerService: MailerService,
-  ) {
-  }
+  ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<Response> {
     // Data validation
@@ -34,7 +33,7 @@ export class UserService {
       if (!token) {
         return {
           data: { user },
-          details: {
+          error: {
             token: 'Error while token creation!',
           },
           message: 'User created with no token',
@@ -48,7 +47,7 @@ export class UserService {
       if (!email) {
         return {
           data: { user },
-          details: {
+          error: {
             email: 'confirmation email could not be sent!',
           },
           message: 'User created with errors',

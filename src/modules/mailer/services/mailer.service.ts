@@ -79,7 +79,7 @@ export class MailerService {
     const username = user.username;
     const link = `${this.frontendOptions.url.verification}/${token}`;
     const html = MailerService.compileTemplate('verification');
-    console.log(link);
+
     return this.sendMail(
       to,
       subject,

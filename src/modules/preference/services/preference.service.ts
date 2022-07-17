@@ -77,7 +77,7 @@ export class PreferenceService {
       // search default value
       const defaultValue = parseValue(subKeyName, getValue(key, defaultValues));
       const value = JSON.stringify(defaultValue);
-      const { data, details: error } = await this.createPreference({
+      const { data, error: error } = await this.createPreference({
         key: keyName,
         value,
       });
@@ -96,7 +96,7 @@ export class PreferenceService {
       // combine stored and default values
       const value = JSON.stringify(Object.assign(currentValue, defaultValue));
       // update preference new value
-      const { data, details: error } = await this.updatePreference(preference.id, {
+      const { data, error: error } = await this.updatePreference(preference.id, {
         value,
       });
       // set preference
