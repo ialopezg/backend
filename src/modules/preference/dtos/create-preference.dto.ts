@@ -1,12 +1,12 @@
 import { IsJSON, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatePreferenceDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   key: string;
 
   @IsJSON()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   value: string;
 }

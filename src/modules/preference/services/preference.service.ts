@@ -1,10 +1,10 @@
 import { Component, HttpStatus } from '@ialopezg/corejs';
 
+import { ValidationException } from '../../../common/exceptions';
 import { Response } from '../../../common/interfaces';
-import { errorHandler, validate } from '../../../utils';
+import { getValue, parseValue, validate } from '../../../common/utils';
 import { CreatePreferenceDto, UpdatePreferenceDto } from '../dtos';
 import { defaultValues, Preference } from '../entities';
-import { getValue, parseValue } from '../utils';
 
 @Component()
 export class PreferenceService {
@@ -14,26 +14,18 @@ export class PreferenceService {
     // validate errors
     const errors = await validate(createPreferenceDto, CreatePreferenceDto);
     if (errors) {
-      return {
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        message: 'Validation error',
-        error: errors,
-      };
+      throw new ValidationException(errors);
     }
 
-    try {
-      // try to store the preference
-      const preference = await Preference.create(createPreferenceDto);
+    // try to store the preference
+    const preference = await Preference.create(createPreferenceDto);
 
-      return {
-        data: { preference },
-        message: 'Preference creation successful',
-        status: HttpStatus.CREATED,
-      };
-    } catch (error: any) {
-      // not successfull
-      return { ...errorHandler(error) };
-    }
+    // return the result
+    return {
+      data: { preference },
+      message: 'Preference creation successful',
+      status: HttpStatus.CREATED,
+    };
   }
 
   async getPreference(
@@ -85,7 +77,7 @@ export class PreferenceService {
       // search default value
       const defaultValue = parseValue(subKeyName, getValue(key, defaultValues));
       const value = JSON.stringify(defaultValue);
-      const { data, error } = await this.createPreference({
+      const { data, details: error } = await this.createPreference({
         key: keyName,
         value,
       });
@@ -104,7 +96,7 @@ export class PreferenceService {
       // combine stored and default values
       const value = JSON.stringify(Object.assign(currentValue, defaultValue));
       // update preference new value
-      const { data, error } = await this.updatePreference(preference.id, {
+      const { data, details: error } = await this.updatePreference(preference.id, {
         value,
       });
       // set preference
@@ -122,50 +114,18 @@ export class PreferenceService {
     // Data validation
     const errors = await validate(updatePreferenceDto, UpdatePreferenceDto);
     if (errors) {
-      return {
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        message: 'Validation error',
-        error: errors,
-      };
+      throw new ValidationException(errors);
     }
 
-    try {
-      const preference = await Preference.findByIdAndUpdate(
-        uuid,
-        updatePreferenceDto,
-      );
+    const preference = await Preference.findByIdAndUpdate(
+      uuid,
+      updatePreferenceDto,
+    );
 
-      return { data: { preference }, message: 'Preference updated successful' };
-    } catch (error: any) {
-      return { ...errorHandler(error) };
-    }
-  }
-
-  private getDefaultValue(
-    key: string,
-    defaultValue?: any,
-  ): { [key: string]: any } {
-    if (Object.hasOwnProperty.call(defaultValues, key)) {
-      return defaultValues[key];
-    }
-
-    return defaultValue || null;
-  }
-  private getPropertyValueFromObject(
-    key: string,
-    target: any,
-    defaultValue?: any,
-  ): any {
-    try {
-      return getValue(key, target);
-    } catch (error) {
-      console.log(error);
-
-      return defaultValue || null;
-    }
-  }
-
-  private setValueToObject(key: string, value: any): any {
-    return parseValue(key, value);
+    return {
+      data: { preference },
+      message: 'Preference updated successful',
+      status: HttpStatus.OK,
+    };
   }
 }

@@ -11,7 +11,7 @@ export const getValue = (key: string, target: any): any => {
 };
 
 /**
- * Convert a string dot-notacion into an object.
+ * Convert a string dot-notation into an object.
  *
  * @param key Dot-notation text.
  * @param defaultValue Default value for object property.

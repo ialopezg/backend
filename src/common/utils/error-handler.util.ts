@@ -9,19 +9,17 @@ import { ValidationException } from '../exceptions';
 import { Response } from '../interfaces';
 
 export const errorHandler = (error: any): Response => {
-  console.log('isMongoError', error.name === 'MongoServerError');
+  console.log('Error Type:', error.name);
   console.log('isHttpException', error instanceof RuntimeException);
+  console.log('isHttpException', error instanceof HttpException);
   if (error.name === 'MongoServerError') {
-    const message = 'Validation failed';
-    const status = HttpStatus.BAD_REQUEST;
-
     if (error && (error.code === 11000 || error.code === 11001)) {
       const key = Object.keys(error.keyValue).join('');
       const value = error.keyValue[key];
 
       return {
         status: HttpStatus.CONFLICT,
-        message,
+        message: 'Validation Conflict',
         details: {
           [key]: `${capitalizeFirst(key)} '${value}' is already taken!`,
         },
@@ -33,10 +31,13 @@ export const errorHandler = (error: any): Response => {
       errors[key] = error.errors[key].message;
     });
 
-    return { status, message, details: errors };
+    return {
+      status: HttpStatus.BAD_REQUEST,
+      message: 'Validation Error - Other',
+      details: errors,
+    };
   }
 
-  console.log('isHttpException', error instanceof HttpException);
   if (error instanceof HttpException) {
     return {
       status: error.getStatus(),
@@ -44,7 +45,6 @@ export const errorHandler = (error: any): Response => {
     };
   }
 
-  console.log('Validation Error:', error instanceof ValidationException);
   if (error instanceof ValidationException) {
     return {
       message: error.getMessage(),

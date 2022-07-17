@@ -2,7 +2,7 @@ import { IsJSON, IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdatePreferenceDto {
   @IsJSON()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   value: string;
 }
