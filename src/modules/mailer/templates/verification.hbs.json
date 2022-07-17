@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost:3000/",
+  "logoUrl": "https://ialopezg.com/packages/corejs/corejs-logo.png",
+  "app": "CoreJS",
+  "name": "Gailisis",
+  "username": "gailisis",
+  "link": "http://localhost:3000/account/verification/confirm/abcde12345efgh67890"
+}

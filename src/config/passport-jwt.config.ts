@@ -23,7 +23,7 @@ export class PassportJwtConfig {
       (payload: any, next: any) => {
         console.log('Payload received', payload);
 
-        const userService = new UserService(null, null/*, null */);
+        const userService = new UserService(null, null, null);
         const user = userService.getUserById(payload.id);
 
         next(null, user || false);

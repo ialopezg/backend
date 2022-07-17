@@ -1,8 +1,15 @@
 import { Module } from '@ialopezg/corejs';
 
-import { MailService } from './services';
+import { PreferenceModule } from '../preference';
+import { MailerService } from './services';
 
 @Module({
-  components: [MailService],
+  modules: [PreferenceModule],
+  components: [MailerService],
+  exports: [MailerService],
 })
-export class MailerModule {}
+export class MailerModule {
+  configure() {
+    console.log('MailerModule configured!');
+  }
+}

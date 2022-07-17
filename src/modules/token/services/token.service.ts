@@ -21,6 +21,7 @@ export class TokenService {
     // store the token into tokens collection
     const token = await Token.create({ user: uuid, type, hash });
 
+    // return result
     return {
       status: HttpStatus.CREATED,
       message: 'Token creation successful!',
