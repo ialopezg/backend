@@ -1,8 +1,8 @@
 import { HttpStatus } from '@ialopezg/corejs';
 
-export class Response {
+export interface Response {
   data?: { [key: string]: any };
-  error?:
+  details?:
     | string
     | { [key: string]: string }
     | { [key: string]: Record<string, string> };
