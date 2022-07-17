@@ -1,30 +1,73 @@
-import { Component, isEmpty } from '@ialopezg/corejs';
-import * as Joi from 'joi';
+import { Component, HttpStatus } from '@ialopezg/corejs';
 
-import { User } from '../../../models';
-import { MailService } from '../../mailer/services';
+import { ValidationException } from '../../../common/exceptions';
+import { Response } from '../../../common/interfaces';
+import { validate } from '../../../common/utils';
+import { MailerService } from '../../mailer/services';
+import { PreferenceService } from '../../preference/services';
+import { TokenService } from '../../token/services';
+import { CreateUserDto } from '../dtos';
+import { User } from '../entities';
 
 @Component()
 export class UserService {
-  async createUser(userCreate: any): Promise<any> {
-    const errors = this.validateRequest(
-      {
-        name: Joi.string().required(),
-        lastname: Joi.string(),
-        email: Joi.string().email().required(),
-        username: Joi.string().min(4).required(),
-        password: Joi.string().required().min(6),
-      },
-      userCreate,
-      { abortEarly: false },
-    );
-    if (!isEmpty(errors)) {
-      return { errors, user: null };
+  constructor(
+    private readonly preferences: PreferenceService,
+    private readonly tokenService: TokenService,
+    private readonly mailerService: MailerService,
+  ) {
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<Response> {
+    // Data validation
+    const errors = await validate(createUserDto, CreateUserDto);
+    if (errors) {
+      throw new ValidationException(errors);
     }
 
-    const user = await User.create(userCreate);
+    // creates user account
+    const user = await User.create(createUserDto);
+    // check if user registration requires verification
+    if (await this.preferences.getValue('user.requires.verification')) {
+      // generate token
+      const token = await this.tokenService.createToken(user.id);
+      if (!token) {
+        return {
+          data: { user },
+          details: {
+            token: 'Error while token creation!',
+          },
+          message: 'User created with no token',
+          status: HttpStatus.CREATED,
+        };
+      }
 
-    return { errors: null, user };
+      // send the email confirmation
+      const hash = token.data.token.hash;
+      const email = await this.mailerService.sendVerification(user, hash);
+      if (!email) {
+        return {
+          data: { user },
+          details: {
+            email: 'confirmation email could not be sent!',
+          },
+          message: 'User created with errors',
+          status: HttpStatus.CREATED,
+        };
+      }
+
+      // result all results
+      return {
+        data: {
+          user,
+          token: hash,
+        },
+        message: email.message,
+        status: HttpStatus.CREATED,
+      };
+    }
+
+    return { data: { user }, message: 'User created successful', status: HttpStatus.CREATED };
   }
 
   async getUser(
@@ -70,7 +113,7 @@ export class UserService {
         }
       }
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve: any) => {
         User.findOne(filter, (error: any, user: any) => {
           if (error) {
             console.log(error);
@@ -159,21 +202,5 @@ export class UserService {
         resolve(user || false);
       });
     });
-  }
-
-  private validateRequest(
-    rules: { [key: string]: any },
-    data: any,
-    options = {},
-  ): any[] {
-    const schema = Joi.object(rules);
-    const { error } = schema.validate(data, options);
-    if (error) {
-      return (<any>error).details.map((e: any) => {
-        return { [e.context.key]: e.message };
-      });
-    }
-
-    return [];
   }
 }
