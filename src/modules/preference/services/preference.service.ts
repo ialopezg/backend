@@ -8,6 +8,29 @@ import { defaultValues, Preference } from '../entities';
 
 @Component()
 export class PreferenceService {
+  private static preferences: { [key: string]: any } = defaultValues;
+
+  async createDefaultValues(values: { [key: string]: any } = defaultValues): Promise<void> {
+    if (!(await this.empty())) {
+      return;
+    }
+
+    for (const key of Object.keys(values)) {
+      await this.createPreference({
+        key,
+        value: JSON.stringify(values[key]),
+      });
+    }
+    console.log('Default preferences have been initiated');
+  }
+
+
+  async empty(): Promise<boolean> {
+    const count = await Preference.countDocuments({});
+
+    return count <= 0;
+  }
+
   async createPreference(
     createPreferenceDto: CreatePreferenceDto,
   ): Promise<Response> {
@@ -38,11 +61,6 @@ export class PreferenceService {
       const key = Object.keys(options).shift();
       const value = options[key];
 
-      // If uuid get result by id
-      if (key === 'uuid') {
-        return Preference.findById(options.uuid);
-      }
-
       // Otherwise compare first options key value
       return Preference.findOne({
         [key]: exactMatch ? value : new RegExp(`^${value}$`, 'i'),
@@ -67,44 +85,66 @@ export class PreferenceService {
     return Preference.findOne({ $or: filters });
   }
 
-  async getValue(key: string): Promise<any> {
+  async getValue(key: string, defaultValue?: any): Promise<any> {
+    // divide key pieces
+    const keys = key.split('.');
     // get main key, the key before first dot
-    const keyName = key.split('.').shift();
-    const subKeyName = key.substring(keyName.length + 1);
-
-    let preference = await this.getPreference({ key: keyName });
+    const keyName = keys.shift();
+    // search mainKey value
+    const preference = await this.getPreference({ key: keyName });
+    // if no preference for main key
     if (!preference) {
-      // search default value
-      const defaultValue = parseValue(subKeyName, getValue(key, defaultValues));
-      const value = JSON.stringify(defaultValue);
-      const { data, error: error } = await this.createPreference({
-        key: keyName,
-        value,
-      });
-      // set preference
-      preference = !error && data.preference;
-    }
+      // and default value provide
+      if (defaultValue) {
+        await this.setValue(keyName, defaultValue);
 
-    // parse preference value from JSON notation to object
-    const result = getValue(subKeyName, JSON.parse(preference.value));
+        // return default value
+        return defaultValue;
+      }
+
+      // else return null
+      return null;
+    }
+    // if main key value found but no more dot-notation keys
+    if (keys.length === 0) {
+      // return the main key value decoded
+      return JSON.parse(preference.value);
+    }
+    const subKeyName = key.substring(keyName.length + 1);
+    // parse current preference value from JSON notation to object
+    const currentValue = JSON.parse(preference.value);
+    // search key requested into current main key value
+    let value = getValue(subKeyName, currentValue);
     // if not property required
-    if (!result) {
-      // search default value
-      const defaultValue = parseValue(subKeyName, getValue(key, defaultValues));
-      // parse stored values
-      const currentValue = JSON.parse(preference.value);
-      // combine stored and default values
-      const value = JSON.stringify(Object.assign(currentValue, defaultValue));
-      // update preference new value
-      const { data, error: error } = await this.updatePreference(preference.id, {
-        value,
-      });
-      // set preference
-      preference = !error && data.preference;
+    if (!value) {
+      if (defaultValue) {
+        // parse default value to object
+        defaultValue = parseValue(subKeyName, defaultValue ?? getValue(key, defaultValues));
+        value = Object.assign(currentValue, defaultValue);
+        await this.setValue(keyName, value, preference);
+
+        return value;
+      }
+
+      return null;
     }
 
-    // finally return from recently preference updated
-    return getValue(subKeyName, JSON.parse(preference.value));
+    // else return main key value stored in database.
+    return value;
+  }
+
+  async setValue(key: string, value: any, preference?: any) {
+    value = JSON.stringify(value);
+    if (!preference) {
+      return this.createPreference({
+        key,
+        value,
+      });
+    }
+
+    return this.updatePreference(preference.id, {
+      value,
+    });
   }
 
   async updatePreference(

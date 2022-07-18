@@ -53,7 +53,7 @@ export const defaultValues = {
     tos: '<p>TODO</p>',
     about:
       '<p>This is about us page. hello and hi from about page description.</p>',
-    copyright: 'Copyright © 2022 Apple Inc. All rights reserved.',
+    copyright: 'Copyright © 2022 CoreJS. All rights reserved.',
     colors: { primary: '#4c8141', secondary: '#061fe0' },
   },
   frontend: {
