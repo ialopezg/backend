@@ -1,23 +1,30 @@
-import { Component, HttpStatus } from '@ialopezg/corejs';
+import { Component } from '@ialopezg/corejs';
 
 import { ValidationException } from '../../../common/exceptions';
-import { Response } from '../../../common/interfaces';
 import { validate } from '../../../common/utils';
-import { MailerService } from '../../mailer/services';
 import { PreferenceService } from '../../preference/services';
 import { TokenService } from '../../token/services';
 import { CreateUserDto } from '../dtos';
 import { User } from '../entities';
+import { UserRoleService } from './user-role.service';
 
 @Component()
 export class UserService {
   constructor(
     private readonly preferences: PreferenceService,
     private readonly tokenService: TokenService,
-    private readonly mailerService: MailerService,
-  ) {}
+    private readonly userRoleService: UserRoleService,
+  ) {
+    this.init()
+      .then(() => {})
+      .catch((error: any) => console.log(error));
+  }
 
-  async createUser(createUserDto: CreateUserDto): Promise<Response> {
+  async init(): Promise<void> {
+    console.log('AppService initialized!');
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<any> {
     // Data validation
     const errors = await validate(createUserDto, CreateUserDto);
     if (errors) {
@@ -25,48 +32,20 @@ export class UserService {
     }
 
     // creates user account
-    const user = await User.create(createUserDto);
-    // check if user registration requires verification
-    if (await this.preferences.getValue('user.requires.verification')) {
-      // generate token
-      const token = await this.tokenService.createToken(user.id);
-      if (!token) {
-        return {
-          data: { user },
-          error: {
-            token: 'Error while token creation!',
-          },
-          message: 'User created with no token',
-          status: HttpStatus.CREATED,
-        };
-      }
-
-      // send the email confirmation
-      const hash = token.data.token.hash;
-      const email = await this.mailerService.sendVerification(user, hash);
-      if (!email) {
-        return {
-          data: { user },
-          error: {
-            email: 'confirmation email could not be sent!',
-          },
-          message: 'User created with errors',
-          status: HttpStatus.CREATED,
-        };
-      }
-
-      // result all results
-      return {
-        data: {
-          user,
-          token: hash,
-        },
-        message: email.message,
-        status: HttpStatus.CREATED,
-      };
+    const user = new User(createUserDto);
+    let role;
+    // set user role
+    if (createUserDto.role) {
+      // if provided
+      role = await this.userRoleService.getRoleByName(createUserDto.role);
+    } else {
+      // otherwise, default role
+      role = await this.userRoleService.getDefaultRole();
     }
+    user.role = role.id;
 
-    return { data: { user }, message: 'User created successful', status: HttpStatus.CREATED };
+    // and return result
+    return user.save();
   }
 
   async getUser(

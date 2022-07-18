@@ -5,7 +5,7 @@ import { UserController } from './controllers';
 import { AuthMiddleware } from './middlewares';
 import {
   ChatGatewayService,
-  NotificationService,
+  NotificationService, UserRoleService,
   UserService,
 } from './services';
 import { TokenModule } from '../token';
@@ -14,8 +14,8 @@ import { PreferenceModule } from '../preference';
 @Module({
   modules: [PreferenceModule, TokenModule, MailerModule],
   controllers: [UserController],
-  components: [ChatGatewayService, UserService, NotificationService],
-  exports: [UserService],
+  components: [ChatGatewayService, UserService, UserRoleService, NotificationService],
+  exports: [UserService, UserRoleService],
 })
 export class UserModule {
   configure(router: any): any {

@@ -1,11 +1,11 @@
 import { generateHash } from '@ialopezg/corejs';
 import { isEmail } from 'class-validator';
-import * as mongoose from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
 import { db } from '../../../models/db';
 import { UserDto } from '../dtos';
 
-interface UserInterface extends mongoose.Document {
+interface UserInterface extends Document {
   name: string;
 
   lastname?: string;
@@ -29,9 +29,9 @@ interface UserInterface extends mongoose.Document {
   verifiedAt: Date;
 }
 
-type UserType = UserInterface & mongoose.Document;
+type UserType = UserInterface & Document;
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     name: { type: String, required: true },
     lastname: { type: String },
@@ -47,7 +47,7 @@ const UserSchema = new mongoose.Schema(
     username: { type: String, unique: true, index: true },
     password: { type: String, required: true },
     avatar: { type: String },
-    role: { type: String, enum: [ 'USER', 'ADMIN', 'SU' ], default: 'USER' },
+    role: { type: Schema.Types.ObjectId, required: true, ref: 'Role' },
     verifiedAt: { type: Date },
     status: {
       type: String,
@@ -97,23 +97,4 @@ UserSchema.methods.toDto = function (): UserDto {
   };
 };
 
-const User = db.model<UserType>('User', UserSchema);
-
-const parseUser = (user: any): any => {
-  return user
-    ? {
-      uuid: user.id,
-      name: user.name,
-      lastname: user.lastname,
-      phone: user.phone,
-      mobile: user.mobile,
-      username: user.email,
-      email: user.email,
-      avatar: user.avatar,
-      role: user.role,
-      status: user.status,
-    }
-    : null;
-};
-
-export { User, parseUser };
+export const User = db.model<UserType>('User', UserSchema);
