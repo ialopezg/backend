@@ -4,8 +4,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString, Matches,
-  MinLength,
+  MinLength, IsBoolean, IsEnum,
 } from 'class-validator';
+import { UserStatus } from '../../user/enums';
 
 export class CreateAuthDto {
   @IsEmail()
@@ -27,4 +28,13 @@ export class CreateAuthDto {
   @Matches(/^[A-Za-z\d-_.]+$/, { message: 'username contains invalid characters' })
   @IsOptional()
   username?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  role?: string;
+
+  @IsEnum(UserStatus)
+  @IsOptional()
+  status?: string;
 }

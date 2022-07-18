@@ -4,6 +4,7 @@ import { Document, Schema } from 'mongoose';
 
 import { db } from '../../../models/db';
 import { UserDto } from '../dtos';
+import { UserStatus } from '../enums';
 
 interface UserInterface extends Document {
   name: string;
@@ -24,7 +25,7 @@ interface UserInterface extends Document {
 
   role: string;
 
-  status: string;
+  status: UserStatus;
 
   verifiedAt: Date;
 }
@@ -51,8 +52,8 @@ const UserSchema = new Schema(
     verifiedAt: { type: Date },
     status: {
       type: String,
-      enum: [ 'Active', 'Inactive', 'Banned' ],
-      default: 'Inactive',
+      enum: UserStatus,
+      default: UserStatus.INACTIVE,
     },
   },
   { timestamps: true },
@@ -76,6 +77,10 @@ UserSchema.pre('save', async function (next: any) {
   // if no username take username from the email address
   if (!this.username) {
     this.username = this.email.split('@').shift();
+  }
+
+  if (this.status === 'Active') {
+    this.verifiedAt = new Date();
   }
 
   next();
