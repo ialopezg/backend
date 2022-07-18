@@ -1,14 +1,17 @@
 import { Module } from '@ialopezg/corejs';
 
-import { SharedModule } from '../shared';
 import { UserModule } from '../user';
 import { AuthController } from './controllers';
+import { MailerModule } from '../mailer';
+import { PreferenceModule } from '../preference';
 import { AuthService } from './services';
+import { TokenModule } from '../token';
 
 @Module({
-  modules: [SharedModule, UserModule],
-  controllers: [AuthController],
-  components: [AuthService],
+  modules: [ PreferenceModule, TokenModule, MailerModule, UserModule ],
+  controllers: [ AuthController ],
+  components: [ AuthService ],
+  exports: [ AuthService ],
 })
 export class AuthModule {
   configure() {

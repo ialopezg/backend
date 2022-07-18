@@ -1,8 +1,7 @@
-import { Component, HttpException, HttpStatus } from '@ialopezg/corejs';
+import { Component, HttpStatus } from '@ialopezg/corejs';
 import { sign } from 'jsonwebtoken';
 
 import { Response } from '../../../common/interfaces';
-import { errorHandler } from '../../../common/utils';
 import { PreferenceService } from '../../preference/services';
 import { TokenType } from '../enums';
 import { Token } from '../models';
@@ -30,9 +29,12 @@ export class TokenService {
   }
 
   async generateToken(uuid: string, type: TokenType): Promise<string> {
+    //set key for preference value
     const key = `token.${type.toString().toLowerCase()}`;
+    // get key value from preferences
     const options = await this.preferences.getValue(key);
 
+    // create and return the hash token
     return sign({ uid: uuid }, options.secretKey, {
       expiresIn: options.expiresIn,
     });

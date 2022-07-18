@@ -5,17 +5,9 @@ import { PreferenceService } from '../../preference/services';
 
 @Component()
 export class UserRoleService {
-  constructor(private readonly preferences: PreferenceService) {
-    this.init()
-      .then(() => {})
-      .catch((error) => console.log(error));
-  }
+  constructor(private readonly preferences: PreferenceService) {}
 
-  private async init(): Promise<void> {
-    await this.createDefaultRoles();
-  }
-
-  private async createDefaultRoles(): Promise<void> {
+  async createDefaultRoles(): Promise<void> {
     if (!(await this.empty())) {
       return null;
     }

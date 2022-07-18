@@ -8,15 +8,18 @@ import {
 } from '@ialopezg/corejs';
 import { Request, Response } from 'express';
 
-import { MailService } from '../../mailer/services';
+import { MailerService } from '../../mailer/services';
 import { UserService } from '../../user/services';
 import { PasswordService } from '../services';
 
 @Controller({ path: 'account/password' })
 export class PasswordController {
-  private readonly userService = new UserService();
   private readonly passwordService = new PasswordService();
-  private readonly mailerService = new MailService();
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   @RequestMapping({ path: 'recovery', method: RequestMethod.POST })
   async recover(request: Request | any, response: Response) {
@@ -60,11 +63,7 @@ export class PasswordController {
     <h2>Hi ${user.name},</h2>
     <p>Please, click the link below to reset your password</p>
     <a href=${url}>Reset password</a>`;
-    const result = await this.mailerService.sendMail(
-      user.email,
-      `:::${context}::: - Password Reset`,
-      body,
-    );
+    const result = await this.mailerService.sendPasswordRecovery(user, token);
 
     response.json({
       message: 'A recovery password email has been sent.',
