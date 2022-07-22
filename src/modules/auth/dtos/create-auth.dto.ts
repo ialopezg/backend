@@ -4,14 +4,19 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString, Matches,
-  MinLength, IsBoolean, IsEnum,
+  MinLength, IsEnum,
 } from 'class-validator';
 import { UserStatus } from '../../user/enums';
 
 export class CreateAuthDto {
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+    facebookId?: string;
+
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+    email: string;
 
   @IsString()
   @IsNotEmpty({ message: 'Password is required!' })
@@ -20,21 +25,22 @@ export class CreateAuthDto {
   @Matches(/(?=.*[a-z])/, { message: 'password must contains at least a lowercase character' })
   @Matches(/(?=.*[A-Z])/, { message: 'password must contains at least an uppercase character' })
   @Matches(/(?=.*\W)/, { message: 'password must contains at least a special character' })
-  password: string;
+  @IsOptional()
+    password?: string;
 
   @IsString()
   @Length(4, 8)
   @Matches(/^(?=.*[A-z])/, { message: 'username must start with a alpha character' })
   @Matches(/^[A-Za-z\d-_.]+$/, { message: 'username contains invalid characters' })
   @IsOptional()
-  username?: string;
+    username?: string;
 
   @IsNotEmpty()
   @IsString()
   @IsOptional()
-  role?: string;
+    role?: string;
 
   @IsEnum(UserStatus)
   @IsOptional()
-  status?: string;
+    status?: string;
 }
