@@ -13,7 +13,7 @@
     "start": "npm run build:live",
     "test": "jest --passWithNoTests --no-cache --runInBand",
     "test:coverage": "npm test --coverage",
-    "test:staged": "npm test -- --findRelatedTests",
+    "test:staged": "npm test --findRelatedTests",
     "test:watch": "npm test --watch"
   },
   "dependencies": {
