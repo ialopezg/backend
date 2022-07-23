@@ -1,7 +1,8 @@
+import { isUndefined } from '@ialopezg/corejs';
+
 import { FacebookAuthenticationParams, FacebookApi } from '../interfaces';
 import { AuthenticationException } from '../exceptions';
 import { FacebookRepository } from '../repositories';
-import { isUndefined } from '@ialopezg/corejs';
 
 export class FacebookAuthService {
   constructor(
@@ -15,9 +16,19 @@ export class FacebookAuthService {
     // if data found
     if (!isUndefined(data)) {
       // get user data from repository
-      await this.facebookRepository.load({ email: data.email });
-      // create user account from facebook user data
-      await this.facebookRepository.create(data);
+      const user = await this.facebookRepository.load({ email: data.email });
+      // if user account exists with facebook email account
+      if (!isUndefined(user?.name)) {
+        // update user account
+        await this.facebookRepository.update({
+          id: user.id,
+          name: user.name,
+          fid: data.fid,
+        });
+      } else {
+        // create user account from facebook user data
+        await this.facebookRepository.create(data);
+      }
     }
 
     return new AuthenticationException();

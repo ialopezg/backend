@@ -1,7 +1,11 @@
-export interface CreateFacebookUserParams {
+export interface CreateFacebookUser {
   fid: string;
   name: string;
-  email: string;
+  email?: string;
+}
+
+export interface UpdateFacebookUser extends CreateFacebookUser {
+  id: string;
 }
 
 export interface FindFacebookUserParams {
@@ -9,10 +13,12 @@ export interface FindFacebookUserParams {
 }
 
 export interface FacebookRepositoryResult {
-  result: undefined;
+  id: string;
+  name?: string;
 }
 
 export interface FacebookRepository {
-  create: (params: CreateFacebookUserParams) => Promise<void>;
+  create: (params: CreateFacebookUser) => Promise<void>;
   load: (params: FindFacebookUserParams) => Promise<FacebookRepositoryResult>;
+  update: (params: UpdateFacebookUser) => Promise<void>;
 }
