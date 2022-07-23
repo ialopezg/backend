@@ -13,7 +13,7 @@
    - [Installation](development/installation.md)
    - [Database installation](development/database.md)
  - Modules
-     - [Authentication & Authorization](modules/auth/index.md)
+     - [Authentication & Authorization](modules/auth/README.md)
 
 ## Description
 
