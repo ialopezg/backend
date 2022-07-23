@@ -1,38 +1,24 @@
 import { AuthenticationException } from '../exceptions';
-import { IFacebookApi, FacebookApiParams, FacebookApiResult } from '../interfaces';
 import { FacebookAuthService } from '../services/facebook-auth.service';
 
 describe('FacebookAuthService', () => {
-  afterAll(async () => {
-    await new Promise<void>(resolve => setTimeout(() => resolve(), 500)); // avoid jest open handle error
-  });
-
-  class FacebookApiSpy implements IFacebookApi {
-    token?: string;
-    callsCount = 0;
-    result: undefined;
-
-    async loadUser({ token }: FacebookApiParams): Promise<FacebookApiResult> {
-      this.token = token;
-      this.callsCount++;
-
-      return this.result;
-    }
-  }
+  // afterAll(async () => {
+  //   await new Promise<void>(resolve => setTimeout(() => resolve(), 500)); // avoid jest open handle error
+  // });
 
   it('should call FacebookAuthenticationService with correct params', async () => {
-    const api = new FacebookApiSpy();
+    const api = { loadUser: jest.fn() };
     const service = new FacebookAuthService(api);
 
     await service.perform({ token: 'token' });
 
-    expect(api.token).toBe('token');
-    expect(api.callsCount).toBe(1);
+    expect(api.loadUser).toHaveBeenCalledWith({ token: 'token' });
+    expect(api.loadUser).toHaveBeenCalledTimes(1);
   });
 
   it('should return AuthenticationError when FacebookApi returns undefined', async () => {
-    const api = new FacebookApiSpy();
-    api.result = undefined;
+    const api = { loadUser: jest.fn() };
+    api.loadUser.mockResolvedValueOnce(undefined);
     const service = new FacebookAuthService(api);
     const authResult = await service.perform({ token: 'token' });
 
