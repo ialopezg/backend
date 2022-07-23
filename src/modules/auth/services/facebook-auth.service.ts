@@ -17,18 +17,13 @@ export class FacebookAuthService {
     if (!isUndefined(data)) {
       // get user data from repository
       const user = await this.facebookRepository.load({ email: data.email });
-      // if user account exists with facebook email account
-      if (!isUndefined(user)) {
-        // update user account
-        await this.facebookRepository.update({
-          id: user.id,
-          name: user.name ?? data.name,
-          fid: data.fid,
-        });
-      } else {
-        // create user account from facebook user data
-        await this.facebookRepository.create(data);
-      }
+      // if user account exists with update user account with facebook details
+      await this.facebookRepository.save({
+        id: user?.id,
+        name: user?.name ?? data.name,
+        email: data.email,
+        fid: data.fid,
+      });
     }
 
     return new AuthenticationException();

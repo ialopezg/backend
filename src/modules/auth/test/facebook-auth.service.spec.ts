@@ -40,25 +40,25 @@ describe('FacebookAuthService', () => {
   });
 
   describe('FacebookRepository', () => {
-    it('should call load when `FacebookAuthService.perform()` returns data', async () => {
+    it('should call load user account whit Facebook data', async () => {
       await auth.perform({ token });
 
       expect(repo.load).toHaveBeenCalledWith({ email: 'any_facebook_email' });
       expect(repo.load).toHaveBeenCalledTimes(1);
     });
 
-    it('should call `create()` when `FacebookAuthService.perform()` returns undefined', async () => {
+    it('should call create user account whit Facebook data', async () => {
       await auth.perform({ token });
 
-      expect(repo.create).toHaveBeenCalledWith({
+      expect(repo.save).toHaveBeenCalledWith({
         fid: 'any_facebook_id',
         name: 'any_facebook_name',
         email: 'any_facebook_email',
       });
-      expect(repo.create).toHaveBeenCalledTimes(1);
+      expect(repo.save).toHaveBeenCalledTimes(1);
     });
 
-    it('should call update() when load() returns data', async () => {
+    it('should not update user account name', async () => {
       repo.load.mockResolvedValueOnce({
         id: 'any_id',
         name: 'any_name',
@@ -66,24 +66,27 @@ describe('FacebookAuthService', () => {
 
       await auth.perform({ token });
 
-      expect(repo.update).toHaveBeenCalledWith({
+      expect(repo.save).toHaveBeenCalledWith({
+        fid: 'any_facebook_id',
+        email: 'any_facebook_email',
         id: 'any_id',
         name: 'any_name',
-        fid: 'any_facebook_id',
       });
-      expect(repo.update).toHaveBeenCalledTimes(1);
+      expect(repo.save).toHaveBeenCalledTimes(1);
     });
 
-    it('should update account name', async () => {
+    it('should update user account name', async () => {
       repo.load.mockResolvedValue({ id: 'any_id' });
 
       await auth.perform({ token });
 
-      expect(repo.update).toHaveBeenCalledWith({
+      expect(repo.save).toHaveBeenCalledWith({
+        fid: 'any_facebook_id',
+        email: 'any_facebook_email',
         id: 'any_id',
         name: 'any_facebook_name',
-        fid: 'any_facebook_id',
       });
+      expect(repo.save).toHaveBeenCalledTimes(1);
     });
   });
 });
