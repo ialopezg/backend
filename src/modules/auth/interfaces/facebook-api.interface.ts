@@ -6,6 +6,6 @@ export interface FacebookApiResult {
   result: undefined;
 }
 
-export interface IFacebookApi {
+export interface FacebookApi {
   loadUser: (params: FacebookApiParams) => Promise<FacebookApiResult>;
 }

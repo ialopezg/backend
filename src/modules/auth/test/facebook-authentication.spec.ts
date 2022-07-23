@@ -1,13 +1,12 @@
+import { mock } from 'jest-mock-extended';
+
 import { AuthenticationException } from '../exceptions';
+import { FacebookApi } from '../interfaces';
 import { FacebookAuthService } from '../services/facebook-auth.service';
 
 describe('FacebookAuthService', () => {
-  // afterAll(async () => {
-  //   await new Promise<void>(resolve => setTimeout(() => resolve(), 500)); // avoid jest open handle error
-  // });
-
   it('should call FacebookAuthenticationService with correct params', async () => {
-    const api = { loadUser: jest.fn() };
+    const api = mock<FacebookApi>();
     const service = new FacebookAuthService(api);
 
     await service.perform({ token: 'token' });
@@ -17,7 +16,7 @@ describe('FacebookAuthService', () => {
   });
 
   it('should return AuthenticationError when FacebookApi returns undefined', async () => {
-    const api = { loadUser: jest.fn() };
+    const api = mock<FacebookApi>();
     api.loadUser.mockResolvedValueOnce(undefined);
     const service = new FacebookAuthService(api);
     const authResult = await service.perform({ token: 'token' });
