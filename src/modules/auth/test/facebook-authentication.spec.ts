@@ -1,20 +1,8 @@
 import { AuthenticationException } from '../exceptions';
-import { FacebookAuthenticationParams } from '../interfaces';
+import { IFacebookApi, FacebookApiParams, FacebookApiResult, FacebookAuthenticationParams } from '../interfaces';
 
 describe('FacebookAuthenticationService', () => {
-  interface FacebookApiParams {
-    token?: string;
-  }
-
-  interface FacebookApiResult {
-    result: undefined;
-  }
-
-  interface FacebookApi {
-    loadUser: (params: FacebookApiParams) => Promise<FacebookApiResult>;
-  }
-
-  class FacebookApiSpy implements FacebookApi {
+  class FacebookApiSpy implements IFacebookApi {
     token?: string;
     result: undefined;
 
@@ -26,7 +14,7 @@ describe('FacebookAuthenticationService', () => {
   }
 
   class FacebookAuthenticationService {
-    constructor(private readonly facebookApi: FacebookApi) {}
+    constructor(private readonly facebookApi: IFacebookApi) {}
 
     async perform(params: FacebookAuthenticationParams): Promise<AuthenticationException> {
       await this.facebookApi.loadUser(params);
