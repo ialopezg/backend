@@ -3,7 +3,9 @@ export interface FacebookApiParams {
 }
 
 export interface FacebookApiResult {
-  result: undefined;
+  fid: string;
+  name: string;
+  email: string;
 }
 
 export interface FacebookApi {
