@@ -1,11 +1,11 @@
 import { AuthenticationException } from '../exceptions';
 import { AccessToken } from './access-token.interface';
 
-interface FacebookAuthenticationParams {
+export interface FacebookAuthenticationParams {
   token: string;
 }
 
-interface FacebookAuthenticationResult {
+export interface FacebookAuthenticationResult {
   result: AccessToken | AuthenticationException;
 }
 
