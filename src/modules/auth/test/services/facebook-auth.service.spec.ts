@@ -1,9 +1,9 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { AuthenticationException } from '../exceptions';
-import { FacebookApi } from '../interfaces';
-import { FacebookAuthService } from '../services/facebook-auth.service';
-import { FacebookRepository } from '../repositories';
+import { AuthenticationException } from '../../exceptions';
+import { FacebookApi } from '../../interfaces';
+import { FacebookAuthService } from '../../services/facebook-auth.service';
+import { FacebookRepository } from '../../repositories';
 
 describe('FacebookAuthService', () => {
   let api: MockProxy<FacebookApi>;
@@ -14,9 +14,9 @@ describe('FacebookAuthService', () => {
   beforeEach(() => {
     api = mock();
     api.loadUser.mockResolvedValue({
-      name: 'any_facebook_name',
+      id: 'any_facebook_id',
       email: 'any_facebook_email',
-      fid: 'any_facebook_id',
+      name: 'any_facebook_name',
     });
     repo = mock();
     repo.load.mockResolvedValue(undefined);

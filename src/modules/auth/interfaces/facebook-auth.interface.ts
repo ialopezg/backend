@@ -1,12 +1,12 @@
 import { AuthenticationException } from '../exceptions';
-import { AccessToken } from './access-token.interface';
+import { AccessTokenDto } from '../dtos';
 
 export interface FacebookAuthenticationParams {
   token: string;
 }
 
 export interface FacebookAuthenticationResult {
-  result: AccessToken | AuthenticationException;
+  result: AccessTokenDto | AuthenticationException;
 }
 
 export interface FacebookAuthentication {
