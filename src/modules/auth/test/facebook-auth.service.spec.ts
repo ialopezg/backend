@@ -8,7 +8,7 @@ import { FacebookRepository } from '../repositories';
 describe('FacebookAuthService', () => {
   let api: MockProxy<FacebookApi>;
   let auth: FacebookAuthService;
-  let repo: FacebookRepository;
+  let repo: MockProxy<FacebookRepository>;
   const token = 'token';
 
   beforeEach(() => {
@@ -19,6 +19,7 @@ describe('FacebookAuthService', () => {
       fid: 'any_facebook_id',
     });
     repo = mock();
+    repo.load.mockResolvedValue(undefined);
     auth = new FacebookAuthService(api, repo);
   });
 
@@ -58,9 +59,7 @@ describe('FacebookAuthService', () => {
     });
 
     it('should call update() when load() returns data', async () => {
-      const load = jest.fn();
-      repo.load = load;
-      load.mockResolvedValueOnce({
+      repo.load.mockResolvedValueOnce({
         id: 'any_id',
         name: 'any_name',
       });
@@ -73,6 +72,18 @@ describe('FacebookAuthService', () => {
         fid: 'any_facebook_id',
       });
       expect(repo.update).toHaveBeenCalledTimes(1);
+    });
+
+    it('should update account name', async () => {
+      repo.load.mockResolvedValue({ id: 'any_id' });
+
+      await auth.perform({ token });
+
+      expect(repo.update).toHaveBeenCalledWith({
+        id: 'any_id',
+        name: 'any_facebook_name',
+        fid: 'any_facebook_id',
+      });
     });
   });
 });
