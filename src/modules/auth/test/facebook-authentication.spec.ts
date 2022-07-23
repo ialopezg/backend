@@ -9,10 +9,12 @@ describe('FacebookAuthService', () => {
 
   class FacebookApiSpy implements IFacebookApi {
     token?: string;
+    callsCount = 0;
     result: undefined;
 
     async loadUser({ token }: FacebookApiParams): Promise<FacebookApiResult> {
       this.token = token;
+      this.callsCount++;
 
       return this.result;
     }
@@ -25,6 +27,7 @@ describe('FacebookAuthService', () => {
     await service.perform({ token: 'token' });
 
     expect(api.token).toBe('token');
+    expect(api.callsCount).toBe(1);
   });
 
   it('should return AuthenticationError when FacebookApi returns undefined', async () => {
