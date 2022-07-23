@@ -12,6 +12,4 @@ mongoose
   .then(() => console.log('Database connected!'))
   .catch((error: any) => console.error(error));
 
-const connection = mongoose.connection;
-
-export { mongoose as db, connection };
+export { mongoose as db };

@@ -11,7 +11,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky install",
     "start": "npm run build:live",
-    "test": "jest --passWithNoTests --no-cache --runInBand",
+    "test": "jest --passWithNoTests --no-cache --runInBand --detectOpenHandles",
     "test:coverage": "npm test --coverage",
     "test:staged": "npm test --findRelatedTests",
     "test:watch": "npm test --watch"
