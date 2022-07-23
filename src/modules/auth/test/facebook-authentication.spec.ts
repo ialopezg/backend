@@ -7,6 +7,7 @@ import { FacebookAuthService } from '../services/facebook-auth.service';
 describe('FacebookAuthService', () => {
   let api: MockProxy<FacebookApi>;
   let auth: FacebookAuthService;
+  const token = 'token';
 
   beforeEach(() => {
     api = mock();
@@ -14,15 +15,15 @@ describe('FacebookAuthService', () => {
   });
 
   it('should call FacebookAuthenticationService with correct params', async () => {
-    await auth.perform({ token: 'token' });
+    await auth.perform({ token });
 
-    expect(api.loadUser).toHaveBeenCalledWith({ token: 'token' });
+    expect(api.loadUser).toHaveBeenCalledWith({ token });
     expect(api.loadUser).toHaveBeenCalledTimes(1);
   });
 
   it('should return AuthenticationError when FacebookApi returns undefined', async () => {
     api.loadUser.mockResolvedValueOnce(undefined);
-    const authResult = await auth.perform({ token: 'token' });
+    const authResult = await auth.perform({ token });
 
     expect(authResult).toEqual(new AuthenticationException());
   });
