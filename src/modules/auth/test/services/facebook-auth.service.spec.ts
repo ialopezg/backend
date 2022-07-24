@@ -7,6 +7,7 @@ import { FacebookRepository } from '../../repositories';
 import mocked = jest.mocked;
 import { FacebookAccountDto } from '../../dtos';
 import { TokenGeneratorService } from '../../../token/services';
+import { TokenDto } from '../../../token/dtos';
 
 jest.mock('../../dtos/facebook-account.dto');
 
@@ -70,7 +71,10 @@ describe('FacebookAuthService', () => {
     it('should call TokenGeneratorService with correct params', async() => {
       await auth.perform({ token });
 
-      expect(tokenGeneratorService.generate).toHaveBeenCalledWith({ key: 'any_account_id' });
+      expect(tokenGeneratorService.generate).toHaveBeenCalledWith({
+        key: 'any_account_id',
+        expiration: TokenDto.expirationInMs,
+      });
       expect(tokenGeneratorService.generate).toHaveBeenCalledTimes(1);
     });
   });

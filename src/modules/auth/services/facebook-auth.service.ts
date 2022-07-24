@@ -5,6 +5,7 @@ import { AuthenticationException } from '../exceptions';
 import { FacebookRepository } from '../repositories';
 import { FacebookAccountDto } from '../dtos';
 import { TokenGeneratorService } from '../../token/services';
+import { TokenDto } from '../../token/dtos';
 
 export class FacebookAuthService {
   constructor(
@@ -23,7 +24,10 @@ export class FacebookAuthService {
       // if user account exists with update user account with facebook details
       const facebookAccount = new FacebookAccountDto(data, user);
       const { id } = await this.facebookRepository.save(facebookAccount);
-      await this.tokenGeneratorService.generate({ key: id });
+      await this.tokenGeneratorService.generate({
+        key: id,
+        expiration: TokenDto.expirationInMs,
+      });
     }
 
     return new AuthenticationException();

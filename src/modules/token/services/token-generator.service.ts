@@ -1,11 +1,5 @@
-export interface TokenGeneratorParams {
-  key: string;
-}
-
-export interface TokenGeneratorResult {
-  hash: string;
-}
+import { TokenDto, TokenGeneratorDto } from '../dtos';
 
 export interface TokenGeneratorService {
-  generate: (params: TokenGeneratorParams) => Promise<TokenGeneratorResult>;
+  generate: (params: TokenGeneratorDto) => Promise<TokenDto>;
 }
