@@ -38,35 +38,33 @@ describe('FacebookAuthService', () => {
     auth = new FacebookAuthService(api, repo, tokenService);
   });
 
-  describe('FacebookApi', () => {
-    it('should call `load()` with correct params', async () => {
-      await auth.perform({ token });
+  it('should call `load()` with correct params', async () => {
+    await auth.perform({ token });
 
-      expect(api.loadUser).toHaveBeenCalledWith({ token });
-      expect(api.loadUser).toHaveBeenCalledTimes(1);
-    });
+    expect(api.loadUser).toHaveBeenCalledWith({ token });
+    expect(api.loadUser).toHaveBeenCalledTimes(1);
+  });
 
-    it('should return AuthenticationError when FacebookApi returns undefined', async () => {
-      api.loadUser.mockResolvedValueOnce(undefined);
+  it('should return AuthenticationError when FacebookApi returns undefined', async () => {
+    api.loadUser.mockResolvedValueOnce(undefined);
 
-      const authResult = await auth.perform({ token });
+    const authResult = await auth.perform({ token });
 
-      expect(authResult).toEqual(new AuthenticationException());
-    });
+    expect(authResult).toEqual(new AuthenticationException());
+  });
 
-    it('should be thrown if FacebookApi cannot resolve user data', async () => {
-      api.loadUser.mockRejectedValueOnce(new AuthenticationException());
+  it('should be thrown if FacebookApi cannot resolve user data', async () => {
+    api.loadUser.mockRejectedValueOnce(new AuthenticationException());
 
-      const authResult = auth.perform({ token });
+    const authResult = auth.perform({ token });
 
-      await expect(authResult).rejects.toThrow(new AuthenticationException());
-    });
+    await expect(authResult).rejects.toThrow(new AuthenticationException());
+  });
 
-    it('should return an AccessToken on success', async () => {
-      const authResult = await auth.perform({ token });
+  it('should return an AccessToken on success', async () => {
+    const authResult = await auth.perform({ token });
 
-      expect((<LoginPayloadDto>authResult).token).toEqual(new TokenDto('any_generated_token'));
-    });
+    expect((<LoginPayloadDto>authResult).token).toEqual(new TokenDto('any_generated_token'));
   });
 
   describe('FacebookRepository', () => {
@@ -105,7 +103,7 @@ describe('FacebookAuthService', () => {
   });
 
   describe('TokenGeneratorService', () => {
-    it('should call TokenGeneratorService with correct params', async() => {
+    it('should call TokenGeneratorService with correct params', async () => {
       await auth.perform({ token });
 
       expect(tokenService.generate).toHaveBeenCalledWith({
