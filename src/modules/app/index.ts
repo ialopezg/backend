@@ -4,14 +4,16 @@ import { AuthModule } from '../auth';
 import { UserModule } from '../user';
 import { AppService } from './services';
 import { PreferenceModule } from '../preference';
+import { TokenModule } from '../token';
 
 @Module({
   modules: [
     PreferenceModule,
+    TokenModule,
     UserModule,
     AuthModule,
   ],
-  components: [ AppService ],
+  components: [AppService],
 })
 export class AppModule {
 }

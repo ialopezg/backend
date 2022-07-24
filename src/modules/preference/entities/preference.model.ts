@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
 import { db } from '../../../models/db';
 
@@ -80,10 +80,6 @@ export const defaultValues = {
     },
   },
   token: {
-    access: {
-      secretKey: process.env.ACCESS_TOKEN_SECRET_KEY || '',
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRATION_TIME || '',
-    },
     verification: {
       secretKey: process.env.VERIFICATION_TOKEN_SECRET_KEY || '',
       expiresIn: process.env.VERIFICATION_TOKEN_EXPIRATION_TIME || '',

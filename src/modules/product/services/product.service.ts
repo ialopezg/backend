@@ -1,6 +1,6 @@
 import { Component } from '@ialopezg/corejs';
 
-import { getPath } from '../../../utils';
+import { getPath } from '../../../common/utils';
 
 @Component()
 export class ProductService {
