@@ -3,7 +3,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { AuthenticationException } from '../../exceptions';
 import { FacebookApi } from '../../interfaces';
 import { FacebookAuthService } from '../../services/facebook-auth.service';
-import { FacebookRepository } from '../../repositories';
+import { UserRepository } from '../../repositories';
 import mocked = jest.mocked;
 import { FacebookAccountDto } from '../../dtos';
 import { TokenGeneratorService } from '../../../token/services';
@@ -15,7 +15,7 @@ jest.mock('../../dtos/facebook-account.dto');
 describe('FacebookAuthService', () => {
   let api: MockProxy<FacebookApi>;
   let auth: FacebookAuthService;
-  let repo: MockProxy<FacebookRepository>;
+  let repo: MockProxy<UserRepository>;
   let tokenService: MockProxy<TokenGeneratorService>;
   const token = 'token';
 
@@ -73,7 +73,7 @@ describe('FacebookAuthService', () => {
       expect(repo.load).toHaveBeenCalledTimes(1);
     });
 
-    it('should be thrown if FacebookRepository cannot resolve user account data', async () => {
+    it('should be thrown if UserRepository cannot resolve user account data', async () => {
       repo.load.mockRejectedValue(new AuthenticationException());
 
       const authResult = auth.perform({ token });
@@ -91,7 +91,7 @@ describe('FacebookAuthService', () => {
       expect(repo.save).toHaveBeenCalledTimes(1);
     });
 
-    it('should be thrown if FacebookRepository cannot saves user account data', async () => {
+    it('should be thrown if UserRepository cannot saves user account data', async () => {
       repo.save.mockRejectedValue(new AuthenticationException());
 
       const authResult = auth.perform({ token });

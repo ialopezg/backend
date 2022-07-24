@@ -1,1 +1,1 @@
-export * from './facebook.repository';
+export * from './user.repository';

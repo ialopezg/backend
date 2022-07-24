@@ -14,7 +14,7 @@ export interface FacebookRepositoryResult {
   name?: string;
 }
 
-export interface FacebookRepository {
+export interface UserRepository {
   load: (params: FindFacebookUserParams) => Promise<FacebookRepositoryResult>;
   save: (params: FacebookUserDto) => Promise<FacebookRepositoryResult>;
 }
