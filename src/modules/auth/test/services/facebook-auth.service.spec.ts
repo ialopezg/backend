@@ -17,9 +17,10 @@ describe('FacebookAuthService', () => {
   let auth: FacebookAuthService;
   let repo: MockProxy<UserRepository>;
   let tokenService: MockProxy<TokenGeneratorService>;
-  const token = 'token';
+  let token: string;
 
-  beforeEach(() => {
+  beforeAll(() => {
+    token = 'any_token';
     api = mock();
     api.loadUser.mockResolvedValue({
       id: 'any_facebook_id',
@@ -31,6 +32,9 @@ describe('FacebookAuthService', () => {
     repo.save.mockResolvedValue({ id: 'any_account_id' });
     tokenService = mock();
     tokenService.generate.mockResolvedValue(new TokenDto('any_generated_token'));
+  });
+
+  beforeEach(() => {
     auth = new FacebookAuthService(api, repo, tokenService);
   });
 
@@ -74,7 +78,7 @@ describe('FacebookAuthService', () => {
     });
 
     it('should be thrown if UserRepository cannot resolve user account data', async () => {
-      repo.load.mockRejectedValue(new AuthenticationException());
+      repo.load.mockRejectedValueOnce(new AuthenticationException());
 
       const authResult = auth.perform({ token });
 
@@ -92,7 +96,7 @@ describe('FacebookAuthService', () => {
     });
 
     it('should be thrown if UserRepository cannot saves user account data', async () => {
-      repo.save.mockRejectedValue(new AuthenticationException());
+      repo.save.mockRejectedValueOnce(new AuthenticationException());
 
       const authResult = auth.perform({ token });
 
@@ -112,7 +116,7 @@ describe('FacebookAuthService', () => {
     });
 
     it('should be thrown if cannot generates a valid access token', async () => {
-      tokenService.generate.mockRejectedValue(new AuthenticationException());
+      tokenService.generate.mockRejectedValueOnce(new AuthenticationException());
 
       const authResult = auth.perform({ token });
 
