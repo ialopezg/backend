@@ -16,7 +16,7 @@
  - [Features](#features)
  - Authentication
    * Local Strategy
-   * [Facebook Strategy](facebook-authentication.md)
+   * [Facebook Strategy](facebook/README.md)
 
 
 ## Overview
