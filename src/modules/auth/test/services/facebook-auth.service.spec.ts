@@ -16,7 +16,7 @@ describe('FacebookAuthService', () => {
   let api: MockProxy<FacebookApi>;
   let auth: FacebookAuthService;
   let repo: MockProxy<FacebookRepository>;
-  let tokenGeneratorService: MockProxy<TokenGeneratorService>;
+  let tokenService: MockProxy<TokenGeneratorService>;
   const token = 'token';
 
   beforeEach(() => {
@@ -29,9 +29,9 @@ describe('FacebookAuthService', () => {
     repo = mock();
     repo.load.mockResolvedValue(undefined);
     repo.save.mockResolvedValue({ id: 'any_account_id' });
-    tokenGeneratorService = mock();
-    tokenGeneratorService.generate.mockResolvedValue(new TokenDto('any_generated_token'));
-    auth = new FacebookAuthService(api, repo, tokenGeneratorService);
+    tokenService = mock();
+    tokenService.generate.mockResolvedValue(new TokenDto('any_generated_token'));
+    auth = new FacebookAuthService(api, repo, tokenService);
   });
 
   describe('FacebookApi', () => {
@@ -42,12 +42,20 @@ describe('FacebookAuthService', () => {
       expect(api.loadUser).toHaveBeenCalledTimes(1);
     });
 
-    it('should return `AuthenticationError` when `load()` returns undefined', async () => {
+    it('should return AuthenticationError when FacebookApi returns undefined', async () => {
       api.loadUser.mockResolvedValueOnce(undefined);
 
       const authResult = await auth.perform({ token });
 
       expect(authResult).toEqual(new AuthenticationException());
+    });
+
+    it('should be thrown if FacebookApi cannot resolve user data', async () => {
+      api.loadUser.mockRejectedValueOnce(new AuthenticationException());
+
+      const authResult = auth.perform({ token });
+
+      await expect(authResult).rejects.toThrow(new AuthenticationException());
     });
 
     it('should return an AccessToken on success', async () => {
@@ -65,6 +73,14 @@ describe('FacebookAuthService', () => {
       expect(repo.load).toHaveBeenCalledTimes(1);
     });
 
+    it('should be thrown if FacebookRepository cannot resolve user account data', async () => {
+      repo.load.mockRejectedValue(new AuthenticationException());
+
+      const authResult = auth.perform({ token });
+
+      await expect(authResult).rejects.toThrow(new AuthenticationException());
+    });
+
     it('should call save() method with facebook account data', async () => {
       const facebookAccountDtoStub = jest.fn().mockImplementation(() => ({ any: 'any' }));
       mocked(FacebookAccountDto).mockImplementation(facebookAccountDtoStub);
@@ -74,17 +90,33 @@ describe('FacebookAuthService', () => {
       expect(repo.save).toHaveBeenCalledWith({ any: 'any' });
       expect(repo.save).toHaveBeenCalledTimes(1);
     });
+
+    it('should be thrown if FacebookRepository cannot saves user account data', async () => {
+      repo.save.mockRejectedValue(new AuthenticationException());
+
+      const authResult = auth.perform({ token });
+
+      await expect(authResult).rejects.toThrow(new AuthenticationException());
+    });
   });
 
   describe('TokenGeneratorService', () => {
     it('should call TokenGeneratorService with correct params', async() => {
       await auth.perform({ token });
 
-      expect(tokenGeneratorService.generate).toHaveBeenCalledWith({
+      expect(tokenService.generate).toHaveBeenCalledWith({
         key: 'any_account_id',
         expiration: TokenDto.expirationInMs,
       });
-      expect(tokenGeneratorService.generate).toHaveBeenCalledTimes(1);
+      expect(tokenService.generate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be thrown if cannot generates a valid access token', async () => {
+      tokenService.generate.mockRejectedValue(new AuthenticationException());
+
+      const authResult = auth.perform({ token });
+
+      await expect(authResult).rejects.toThrow(new AuthenticationException());
     });
   });
 });
