@@ -1,3 +1,3 @@
-export interface AccessTokenDto {
-  hash: string;
+export class AccessTokenDto {
+  constructor(private readonly value: string) {}
 }

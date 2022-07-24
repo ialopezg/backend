@@ -1,6 +1,5 @@
 import { Component, HttpStatus, isEmpty } from '@ialopezg/corejs';
 
-import { Response } from '../../../common/interfaces';
 import { UserService } from '../../user/services';
 import { RegistrationDto } from '../dtos';
 import { TokenService } from '../../token/services';

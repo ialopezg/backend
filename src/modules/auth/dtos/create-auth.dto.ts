@@ -12,7 +12,7 @@ export class CreateAuthDto {
   @IsNotEmpty()
   @IsString()
   @IsOptional()
-    facebookId?: string;
+    fid?: string;
 
   @IsEmail()
   @IsNotEmpty()
