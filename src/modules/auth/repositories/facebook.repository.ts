@@ -16,5 +16,5 @@ export interface FacebookRepositoryResult {
 
 export interface FacebookRepository {
   load: (params: FindFacebookUserParams) => Promise<FacebookRepositoryResult>;
-  save: (params: FacebookUserDto) => Promise<void>;
+  save: (params: FacebookUserDto) => Promise<FacebookRepositoryResult>;
 }

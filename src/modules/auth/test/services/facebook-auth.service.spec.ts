@@ -6,6 +6,7 @@ import { FacebookAuthService } from '../../services/facebook-auth.service';
 import { FacebookRepository } from '../../repositories';
 import mocked = jest.mocked;
 import { FacebookAccountDto } from '../../dtos';
+import { TokenGeneratorService } from '../../../token/services';
 
 jest.mock('../../dtos/facebook-account.dto');
 
@@ -13,6 +14,7 @@ describe('FacebookAuthService', () => {
   let api: MockProxy<FacebookApi>;
   let auth: FacebookAuthService;
   let repo: MockProxy<FacebookRepository>;
+  let tokenGeneratorService: MockProxy<TokenGeneratorService>;
   const token = 'token';
 
   beforeEach(() => {
@@ -24,7 +26,9 @@ describe('FacebookAuthService', () => {
     });
     repo = mock();
     repo.load.mockResolvedValue(undefined);
-    auth = new FacebookAuthService(api, repo);
+    repo.save.mockResolvedValue({ id: 'any_account_id' });
+    tokenGeneratorService = mock();
+    auth = new FacebookAuthService(api, repo, tokenGeneratorService);
   });
 
   describe('FacebookApi', () => {
@@ -59,6 +63,15 @@ describe('FacebookAuthService', () => {
 
       expect(repo.save).toHaveBeenCalledWith({ any: 'any' });
       expect(repo.save).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('TokenGeneratorService', () => {
+    it('should call TokenGeneratorService with correct params', async() => {
+      await auth.perform({ token });
+
+      expect(tokenGeneratorService.generate).toHaveBeenCalledWith({ key: 'any_account_id' });
+      expect(tokenGeneratorService.generate).toHaveBeenCalledTimes(1);
     });
   });
 });
