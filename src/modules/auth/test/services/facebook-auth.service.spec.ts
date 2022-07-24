@@ -8,6 +8,7 @@ import mocked = jest.mocked;
 import { FacebookAccountDto } from '../../dtos';
 import { TokenGeneratorService } from '../../../token/services';
 import { TokenDto } from '../../../token/dtos';
+import { LoginPayloadDto } from '../../dtos/login-payload.dto';
 
 jest.mock('../../dtos/facebook-account.dto');
 
@@ -29,6 +30,7 @@ describe('FacebookAuthService', () => {
     repo.load.mockResolvedValue(undefined);
     repo.save.mockResolvedValue({ id: 'any_account_id' });
     tokenGeneratorService = mock();
+    tokenGeneratorService.generate.mockResolvedValue(new TokenDto('any_generated_token'));
     auth = new FacebookAuthService(api, repo, tokenGeneratorService);
   });
 
@@ -42,9 +44,16 @@ describe('FacebookAuthService', () => {
 
     it('should return `AuthenticationError` when `load()` returns undefined', async () => {
       api.loadUser.mockResolvedValueOnce(undefined);
+
       const authResult = await auth.perform({ token });
 
       expect(authResult).toEqual(new AuthenticationException());
+    });
+
+    it('should return an AccessToken on success', async () => {
+      const authResult = await auth.perform({ token });
+
+      expect((<LoginPayloadDto>authResult).token).toEqual(new TokenDto('any_generated_token'));
     });
   });
 

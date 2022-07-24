@@ -1,4 +1,4 @@
-import { FacebookDataDto } from '../dtos/facebook-account.dto';
+import { FacebookDataDto } from '../dtos';
 
 export interface FacebookApiParams {
   token?: string;
