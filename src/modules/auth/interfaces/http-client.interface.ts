@@ -4,8 +4,7 @@ export interface HttpClientParams {
 }
 
 export interface HttpClientResult {
-  access_token?: string;
-  data?: any;
+  [property: string]: any;
 }
 
 export interface HttpClient {
